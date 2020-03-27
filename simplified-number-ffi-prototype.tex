@@ -1,0 +1,577 @@
+\documentclass{article}
+\usepackage{indentfirst}
+\usepackage{ebproof}
+\usepackage{amsmath}
+\usepackage[
+hidelinks,
+bookmarksopen
+]{hyperref}
+\usepackage{listings}
+
+\usepackage{xcolor}
+\usepackage{xparse}
+
+\NewDocumentCommand{\codeword}{v}{%
+	\texttt{\textcolor{blue}{#1}}%
+}
+
+\lstset{
+	keywordstyle={\bfseries \color{blue}},
+	backgroundcolor={\bfseries \color{gray}},
+}
+
+
+\begin{document}
+	
+	\tableofcontents
+	\pagebreak
+	
+	\section{$TS_{sub}$}
+	
+	Simply typed lambda calculus augmented with:
+	\begin{enumerate}
+		\item Double-precision 64-bit binary floats (format IEEE 754)
+		\item Float addition (corresponds directly to JS `+' operator)
+	\end{enumerate}
+	
+	\subsection{Terms}
+	$\tau ::=$
+	
+	\begin{align*}
+		float  										&& \text{TS Number} \\
+		\tau_1 + \tau_2 							&& \text{Addition} \\
+		\lambda x:T.\tau_1							&& \text{Abstraction} \\
+		\tau_1 \tau_2								&& \text{Application}
+	\end{align*}
+
+
+%*********************************************
+%*********************************************	
+	\subsection{Values}
+	v ::=
+	\begin{align*}
+		float										&& \text{Double-precision 64-bit binary format IEEE 754} \\
+		\lambda x:T.\tau							&& \text{Abstraction value}
+	\end{align*}
+	
+	
+%*********************************************
+%*********************************************	
+	\subsection{Types}
+	T ::=
+	\begin{align*}
+		Number												&& \text{Type of floats}\\
+		T \rightarrow T										&& \text{Type of functions}
+	\end{align*}
+	
+%*********************************************
+%*********************************************
+	\subsection{Evaluation}
+	
+	% E-ADD1
+	\begin{prooftree}
+		\hypo{\tau_1 \rightarrow \tau_1'}
+		\infer[right label=@]1[(E-ADD1)]{\tau_1 + \tau_2 \rightarrow \tau_1' + \tau_2}
+	\end{prooftree}\\\\
+
+	%E-ADD2
+	\begin{prooftree}
+		\hypo{\tau_2 \rightarrow \tau_2'}
+		\infer[right label=@]1[(E-ADD2)]{v_1 + \tau_2 \rightarrow v_1 + \tau_2'}
+	\end{prooftree}\\\\
+
+	%E-ADD3
+	\begin{prooftree}
+		\hypo{float_1 + float_2 = float_3}
+		\infer[right label=@]1[(E-ADD3)]{float_1 + float_2 \rightarrow float_3 }
+	\end{prooftree}\\\\
+	
+	%E-APP1
+	\begin{prooftree}
+		\hypo{\tau_1 \rightarrow \tau_1'}
+		\infer[right label=@]1[(E-APP1)]{\tau_1 \tau_2 \rightarrow \tau_1' \tau_2}
+	\end{prooftree}\\\\
+
+	%E-APP2
+	\begin{prooftree}
+		\hypo{\tau_2 \rightarrow \tau_2'}
+		\infer[right label=@]1[(E-APP2)]{v_1 \tau_2 \rightarrow v_1 \tau_2'}
+	\end{prooftree}\\\\
+
+	%E-APPABS
+	\begin{prooftree}
+		\infer[right label=@]0[(E-APPABS)]{
+			(\lambda x:T.\tau_1) v_2 \rightarrow [x := v_2]\tau_1
+		}	
+	\end{prooftree}
+
+
+%*********************************************
+%*********************************************
+	\subsection{Typing}
+	
+	% T-NUMBER
+	\begin{prooftree}
+		\infer[right label=@]0[(T-NUMBER)]{\Gamma \vdash float: Number}
+	\end{prooftree}\\\\
+
+	% T-ADD
+	\begin{prooftree}
+		\hypo{\tau_1: Number}
+		\hypo{\tau_2: Number}
+		\infer[right label=@]2[(T-ADD)]{\Gamma \vdash \tau_1 + \tau_2: Number}
+	\end{prooftree}\\\\
+
+	% T-VAR
+	\begin{prooftree}
+		\hypo{x: T \in \Gamma}
+		\infer[right label=@]1[(T-VAR)]{\Gamma \vdash x: T}
+	\end{prooftree}\\\\
+
+	% T-ABS
+	\begin{prooftree}
+		\hypo{\Gamma, x: T_1 \vdash \tau: T_2}
+		\infer[right label=@]1[(T-ABS)]{
+			\Gamma \vdash \lambda x:T_1. \tau: T_1 \rightarrow T_2
+		}
+	\end{prooftree}\\\\
+
+	% T-APP
+	\begin{prooftree}
+		\hypo{\Gamma \vdash \tau_1: T_1 \rightarrow T_2}
+		\hypo{\Gamma \vdash \tau_2: T_1}
+		\infer[right label=@]2[(T-APP)]{
+			\Gamma \vdash \tau_1 \tau_2: T_2
+		}
+	\end{prooftree}
+
+
+%*********************************************
+%*********************************************
+%*********************************************
+%*********************************************
+%*********************************************
+	\section{$PY_{Number}$}
+	Simply typed lambda calculus augmented with:
+	\begin{enumerate}
+		\item ``Unlimited'' precision rational numbers
+		\item Rational addition (corresponds to \lstinline{foo()} function found in js-number.js)
+	\end{enumerate}
+
+	\subsection{Terms}
+	$\tau ::=$
+	
+	\begin{align*}
+	rational  									&& \text{Pyret Number} \\
+	\tau_1 + \tau_2 							&& \text{Addition} \\
+	\lambda x:T.\tau_1							&& \text{Abstraction} \\
+	\tau_1 \tau_2								&& \text{Application}
+	\end{align*}
+	
+	
+	%*********************************************
+	%*********************************************	
+	\subsection{Values}
+	v ::=
+	\begin{align*}
+		rational							&& \text{``Unlimited'' precision rational} \\
+		\lambda x:T.\tau					&& \text{Abstraction value}
+	\end{align*}
+	
+	
+	%*********************************************
+	%*********************************************	
+	\subsection{Types}
+	T ::=
+	\begin{align*}
+		Number												&& \text{Type of floats}\\
+		T \rightarrow T										&& \text{Type of functions}
+	\end{align*}
+		
+	%*********************************************
+	%*********************************************
+	\subsection{Evaluation}
+	
+	% E-ADD1
+	\begin{prooftree}
+		\hypo{\tau_1 \rightarrow \tau_1'}
+		\infer[right label=@]1[(E-ADD1)]{\tau_1 + \tau_2 \rightarrow \tau_1' + \tau_2}
+	\end{prooftree}\\\\
+	
+	%E-ADD2
+	\begin{prooftree}
+		\hypo{\tau_2 \rightarrow \tau_2'}
+		\infer[right label=@]1[(E-ADD2)]{v_1 + \tau_2 \rightarrow v_1 + \tau_2'}
+	\end{prooftree}\\\\
+	
+	%E-ADD3
+	\begin{prooftree}
+		\hypo{rational_1 + rational_2 = rational_3}
+		\infer[right label=@]1[(E-ADD3)]{rational_1 + rational_2 \rightarrow rational_3 }
+	\end{prooftree}\\\\
+	
+	%E-APP1
+	\begin{prooftree}
+		\hypo{\tau_1 \rightarrow \tau_1'}
+		\infer[right label=@]1[(E-APP1)]{\tau_1 \tau_2 \rightarrow \tau_1' \tau_2}
+	\end{prooftree}\\\\
+	
+	%E-APP2
+	\begin{prooftree}
+		\hypo{\tau_2 \rightarrow \tau_2'}
+		\infer[right label=@]1[(E-APP2)]{v_1 \tau_2 \rightarrow v_1 \tau_2'}
+	\end{prooftree}\\\\
+	
+	%E-APPABS
+	\begin{prooftree}
+		\infer[right label=@]0[(E-APPABS)]{
+			(\lambda x:T.\tau_1) v_2 \rightarrow [x := v_2]\tau_1
+		}	
+	\end{prooftree}
+	
+	
+	%*********************************************
+	%*********************************************
+	\subsection{Typing}
+	
+	% T-NUMBER
+	\begin{prooftree}
+		\infer[right label=@]0[(T-NUMBER)]{\Gamma \vdash rational: Number}
+	\end{prooftree}\\\\
+	
+	% T-ADD
+	\begin{prooftree}
+		\hypo{\tau_1: Number}
+		\hypo{\tau_2: Number}
+		\infer[right label=@]2[(T-ADD)]{\Gamma \vdash \tau_1 + \tau_2: Number}
+	\end{prooftree}\\\\
+	
+	% T-VAR
+	\begin{prooftree}
+		\hypo{x: T \in \Gamma}
+		\infer[right label=@]1[(T-VAR)]{\Gamma \vdash x: T}
+	\end{prooftree}\\\\
+	
+	% T-ABS
+	\begin{prooftree}
+		\hypo{\Gamma, x: T_1 \vdash \tau: T_2}
+		\infer[right label=@]1[(T-ABS)]{
+			\Gamma \vdash \lambda x:T_1. \tau: T_1 \rightarrow T_2
+		}
+	\end{prooftree}\\\\
+	
+	% T-APP
+	\begin{prooftree}
+		\hypo{\Gamma \vdash \tau_1: T_1 \rightarrow T_2}
+		\hypo{\Gamma \vdash \tau_2: T_1}
+		\infer[right label=@]2[(T-APP)]{
+			\Gamma \vdash \tau_1 \tau_2: T_2
+		}
+	\end{prooftree}
+
+
+%*********************************************
+%*********************************************
+%*********************************************
+%*********************************************
+%*********************************************	
+	\section{$STLC_{v1}$ Target}
+	Simply typed lambda calculus augmented with:
+	\begin{enumerate}
+		\item ``Unlimited'' precision rational numbers
+		\item Rational addition (corresponds to \lstinline{foo()} function found in js-number.js)
+		\item Double-precision 64-bit binary floats (format IEEE 754)
+		\item Float addition (corresponds directly to JS `+' operator)
+	\end{enumerate}
+	\subsection{Terms}
+	$\tau ::=$
+	\begin{align*}
+		float 		  								&& \text{TS Number} \\
+		rational	  								&& \text{Pyret Number} \\
+		\tau_1 + \tau_2 							&& \text{Addition} \\
+		\tau_1 +^{PY} \tau_2 						&& \text{Pyret Addition} \\
+		\tau_1 \tau_2 							    && \text{Application} \\
+		\lambda x: T. \tau						    && \text{Abstraction} \\
+	\end{align*}
+
+
+%*********************************************
+%*********************************************
+	\subsection{Values}
+	v ::=
+	\begin{align*}
+		float						&& \text{Double-precision 64-bit binary format IEEE 754} \\
+		rational					&& \text{"Unlimited" precision rational number}\\
+		\lambda x. \tau		    	&& \text{Abstraction} \\
+		fail						&& \text{Explicit failure value}
+	\end{align*}
+
+
+%*********************************************
+%*********************************************
+	\subsection{Types}
+	T ::=
+	\begin{align*}
+		num_f				&& \text{Type of floats}\\
+		num_r				&& \text{Type of rationals}\\
+		T \rightarrow T		&& \text{Function type}
+	\end{align*}
+	
+	
+%*********************************************
+%*********************************************	
+	\subsection{Evaluation}
+	
+	% E-ADD1
+	\begin{prooftree}
+		\hypo{t_1 \rightarrow t_1'}
+		\hypo{t_1' \neq fail}
+		\infer[right label=@]2[(E-ADD1)]{t_1 + t_2 \rightarrow t_1' + t_2}
+	\end{prooftree}\\\\
+	
+	% E-ADD2
+	\begin{prooftree}
+		\hypo{t_2 \rightarrow t_2'}
+		\hypo{t_2' \neq fail}
+		\infer[right label=@]2[(E-ADD2)]{v_1 + t_2 \rightarrow v_1 + t_2'}
+	\end{prooftree}\\\\
+
+	% E-ADD3
+	\begin{prooftree}
+		\hypo{float_1 + float_2 = float_3}
+		\infer[right label=@]1[(E-ADD3)]{float_1 + float_2 \rightarrow float_3}
+	\end{prooftree}\\\\
+
+	% E-PYADD1
+	\begin{prooftree}
+		\hypo{t_1 \rightarrow t_1'}
+		\hypo{t_1' \neq fail}
+		\infer[right label=@]2[(E-PYADD1)]{t_1 +^{PY} t_2 \rightarrow t_1' + t_2}
+	\end{prooftree}\\\\
+	
+	% E-PYADD2
+	\begin{prooftree}
+		\hypo{t_2 \rightarrow t_2'}
+		\hypo{t_2' \neq fail}
+		\infer[right label=@]2[(E-PYADD2)]{v_1 +^{PY} t_2 \rightarrow v_1 + t_2'}
+	\end{prooftree}\\\\
+	
+	% E-PYADD3
+	\begin{prooftree}
+		\hypo{float_1 + float_2 = float_3}
+		\infer[right label=@]1[(E-PYADD3)]{float_1 +^{PY} float_2 \rightarrow float_3}
+	\end{prooftree}\\\\
+
+	% E-PYADD3
+	\begin{prooftree}
+		\hypo{rational_1 + rational_2 = rational_3}
+		\infer[right label=@]1[(E-PYADD3)]{rational_1 +^{PY} rational_2 \rightarrow rational_3}
+	\end{prooftree}\\\\
+
+	% E-PYADD4
+	\begin{prooftree}
+		\hypo{rational_1 + float_2 = rational_3}
+		\infer[right label=@]1[(E-PYADD4)]{rational_1 +^{PY} float_2 \rightarrow rational_3}
+	\end{prooftree}\\\\
+
+	% E-PYADD5
+	\begin{prooftree}
+		\hypo{float_1 + rational_2 = rational_3}
+		\infer[right label=@]1[(E-PYADD5)]{float_1 +^{PY} rational_2 \rightarrow rational_3}
+	\end{prooftree}\\\\
+	
+	%E-APP1
+	\begin{prooftree}
+		\hypo{\tau_1 \rightarrow \tau_1'}
+		\infer[right label=@]1[(E-APP1)]{\tau_1 \tau_2 \rightarrow \tau_1' \tau_2}
+	\end{prooftree}\\\\
+	
+	%E-APP2
+	\begin{prooftree}
+		\hypo{\tau_2 \rightarrow \tau_2'}
+		\infer[right label=@]1[(E-APP2)]{v_1 \tau_2 \rightarrow v_1 \tau_2'}
+	\end{prooftree}\\\\
+	
+	%E-APPABS
+	\begin{prooftree}
+		\infer[right label=@]0[(E-APPABS)]{
+			(\lambda x:T.\tau_1) v_2 \rightarrow [x := v_2]\tau_1
+		}	
+	\end{prooftree}\\\\
+
+	% E-ADD-FAIL-1
+	\begin{prooftree}
+		\hypo{t_1 \rightarrow fail}
+		\infer[right label=@]1[(E-ADD-FAIL-1)]{t_1 + t_2 \rightarrow fail}
+	\end{prooftree}\\\\
+	
+	% E-ADD-FAIL-2
+	\begin{prooftree}
+		\hypo{t_2 \rightarrow fail}
+		\infer[right label=@]1[(E-ADD-FAIL-2)]{v_1 + t_2 \rightarrow fail}
+	\end{prooftree}\\\\
+
+	%E-APP-FAIL-1
+	\begin{prooftree}
+		\hypo{\tau_1 \rightarrow fail}
+		\infer[right label=@]1[(E-APP-FAIL-1)]{\tau_1 \tau_2 \rightarrow fail}
+	\end{prooftree}\\\\
+
+	%E-APP-FAIL-2
+	\begin{prooftree}
+		\hypo{\tau_2 \rightarrow fail}
+		\infer[right label=@]1[(E-APP-FAIL-2)]{v_1 \tau_2 \rightarrow fail}
+	\end{prooftree}\\\\
+
+
+%*********************************************
+%*********************************************
+	\subsection{Typing}
+	
+	% T-FAIL
+	\begin{prooftree}
+		\infer[right label=@]0[(T-FAIL)]{\Gamma \vdash fail: T}
+	\end{prooftree}\\\\
+	
+	% T-FLOAT
+	\begin{prooftree}
+		\infer[right label=@]0[(T-FLOAT)]{\Gamma \vdash float: num_f}
+	\end{prooftree}\\\\
+
+	% T-RATIONAL
+	\begin{prooftree}
+		\infer[right label=@]0[(T-RATIONAL)]{\Gamma \vdash rational: num_r}
+	\end{prooftree}\\\\
+	
+	% T-VAR
+	\begin{prooftree}
+		\hypo{x: T \in \Gamma}
+		\infer[right label=@]1[(T-VAR)]{\Gamma \vdash x: T}
+	\end{prooftree}\\\\
+
+	% T-ADD
+	\begin{prooftree}
+		\hypo{\Gamma \vdash t_1: num_f}
+		\hypo{\Gamma \vdash t_2: num_f}
+		\infer[right label=@]2[(T-ADD)]{\Gamma \vdash t_1 + t_2: num_f}
+	\end{prooftree}\\\\
+
+	% T-PY-ADD-1
+	\begin{prooftree}
+		\hypo{\Gamma \vdash t_1: num_r}
+		\hypo{ \Gamma \vdash t_2: num_r}
+		\infer[right label=@]2[(T-PY-ADD1)]{\Gamma \vdash t_1 +^{PY} t_2: num_r}
+	\end{prooftree}\\\\
+
+	% T-PY-ADD-2
+	\begin{prooftree}
+		\hypo{\Gamma \vdash t_1: num_r}
+		\hypo{\Gamma \vdash t_2: num_f}
+		\infer[right label=@]2[(T-PY-ADD2)]{\Gamma \vdash t_1 +^{PY} t_2: num_r}
+	\end{prooftree}\\\\
+
+	% T-PY-ADD-3
+	\begin{prooftree}
+		\hypo{\Gamma \vdash t_1: num_f}
+		\hypo{\Gamma \vdash t_2: num_r}
+		\infer[right label=@]2[(T-PY-ADD3)]{\Gamma \vdash t_1 +^{PY} t_2: num_r}
+	\end{prooftree}\\\\
+
+	% T-ABS
+	\begin{prooftree}
+		\hypo{\Gamma, x: T_1 \vdash \tau: T_2}
+		\infer[right label=@]1[(T-ABS)]{
+			\Gamma \vdash \lambda x:T_1. \tau: T_1 \rightarrow T_2
+		}
+	\end{prooftree}\\\\
+	
+	% T-APP
+	\begin{prooftree}
+		\hypo{\Gamma \vdash \tau_1: T_1 \rightarrow T_2}
+		\hypo{\Gamma \vdash \tau_2: T_1}
+		\infer[right label=@]2[(T-APP)]{
+			\Gamma \vdash \tau_1 \tau_2: T_2
+		}
+	\end{prooftree}
+
+%*********************************************
+%*********************************************
+%*********************************************
+%*********************************************
+%*********************************************	
+	\section{Compiler $TS_{sub}$ to $STLC_{v1}$ Target}
+
+	\subsection{Types}
+	\begin{align*}
+		Number					&& = && num_f\\
+		T_1 \rightarrow T_2 	&& = && T_1' \rightarrow T_2'
+	\end{align*}
+	
+%*********************************************
+%*********************************************	
+	\subsection{Terms}
+	\begin{align*}
+	float: Number							 && = && float: num_f\\
+	\tau_1 + \tau_2: Number					 && = && \tau_1' + \tau_2': num_f\\
+	\tau_1 \tau_2: T						 && = && \tau_1' \tau_2': T'\\
+	\lambda x: T_1.\tau: T_1 \rightarrow T_2 && = && \lambda x: T_1'.\tau': T_1' \rightarrow T_2'
+	\end{align*}
+	
+	
+%*********************************************
+%*********************************************
+%*********************************************
+%*********************************************
+%*********************************************	
+	\section{Compiler $PY_{Number}$ to $STLC_{v1}$ Target}
+	
+	\subsection{Types}
+	\begin{align*}
+	Number					&& = && num_r\\
+	T_1 \rightarrow T_2 	&& = && T_1' \rightarrow T_2'
+	\end{align*}
+	
+	%*********************************************
+	%*********************************************	
+	\subsection{Terms}
+	\begin{align*}
+	rational: Number						 && = && rational: num_r\\
+	\tau_1 + \tau_2: Number					 && = && \tau_1' +^{PY} \tau_2': num_r\\
+	\tau_1 \tau_2: T						 && = && \tau_1' \tau_2': T'\\
+	\lambda x: T_1.\tau: T_1 \rightarrow T_2 && = && \lambda x: T_1'.\tau': T_1' \rightarrow T_2'
+	\end{align*}
+
+
+%*********************************************
+%*********************************************
+%*********************************************
+%*********************************************
+%*********************************************
+	\section{$STLC_{v1}$}
+	
+	\subparagraph{$TS_{sub}$}
+	\begin{align*}
+		\mathcal{V}[[Number]]				&& = && \{ n| n \text{ is any float}\}\\
+		\mathcal{V}[[\eta_1 \rightarrow \eta_2]]	&& = && \{ 
+				(\lambda x.\tau)| 
+				\forall v \in \bf{V}[[\eta_1]].[x:=v]\tau \in \mathcal{E}[[\eta_2]]
+		\}
+	\end{align*}
+	
+	\subparagraph{$PY_{sub}$}
+	\begin{align*}
+		\mathcal{V}[[Number]]				&& = && \{ n| n \text{ is any rational}\}\\
+		\mathcal{V}[[\theta_1 \rightarrow \theta_2]]	&& = && \{ 
+		(\lambda x.\tau)| 
+		\forall v \in \bf{V}[[\theta_1]].[x:=v]\tau \in \mathcal{E}[[\theta_2]]
+		\}
+	\end{align*}
+	
+	\begin{align*}
+		\mathcal{E}[[T]] && = && \{
+		\tau | (\tau \Downarrow fail) \lor
+		(\tau \Downarrow v \land v \in \mathcal{V}[[T]])
+	\}
+	\end{align*}
+
+\end{document}
