@@ -10,6 +10,9 @@ bookmarksopen
 
 \usepackage{xcolor}
 \usepackage{xparse}
+\usepackage[style=ACM-Reference-Format,backend=biber]{biblatex}
+
+\addbibresource{references.bib}
 
 \NewDocumentCommand{\codeword}{v}{%
 	\texttt{\textcolor{blue}{#1}}%
@@ -25,6 +28,9 @@ bookmarksopen
 	
 	\tableofcontents
 	\pagebreak
+	
+	\section{Introduction}
+	An early-stage formal specification of a Pyret binding generator for TypeScript code based on augmented simply-typed lambda calculi and source-type indexed logical relations as outlined by \textcite{FFI}.
 	
 	\section{$TS_{sub}$}
 	
@@ -574,5 +580,7 @@ bookmarksopen
 		(\tau \Downarrow v \land v \in \mathcal{V}[[T]])
 	\}
 	\end{align*}
+	
+	\printbibliography
 
 \end{document}
