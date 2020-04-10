@@ -329,6 +329,8 @@ bookmarksopen
 %*********************************************	
 	\subsection{Evaluation}
 	
+	Evaluation rules around the `fail' are omitted (evaluation immediately halts).\\
+	
 	% E-ADD1
 	\begin{prooftree}
 		\hypo{t_1 \rightarrow t_1'}
@@ -353,38 +355,38 @@ bookmarksopen
 	\begin{prooftree}
 		\hypo{t_1 \rightarrow t_1'}
 		\hypo{t_1' \neq fail}
-		\infer[right label=@]2[(E-PYADD1)]{t_1 +^{PY} t_2 \rightarrow t_1' + t_2}
+		\infer[right label=@]2[(E-PYADD1)]{t_1 +^{PY} t_2 \rightarrow t_1' +^{PY} t_2}
 	\end{prooftree}\\\\
 	
 	% E-PYADD2
 	\begin{prooftree}
 		\hypo{t_2 \rightarrow t_2'}
 		\hypo{t_2' \neq fail}
-		\infer[right label=@]2[(E-PYADD2)]{v_1 +^{PY} t_2 \rightarrow v_1 + t_2'}
+		\infer[right label=@]2[(E-PYADD2)]{v_1 +^{PY} t_2 \rightarrow v_1 +^{PY} t_2'}
 	\end{prooftree}\\\\
 	
 	% E-PYADD3
 	\begin{prooftree}
-		\hypo{float_1 + float_2 = float_3}
-		\infer[right label=@]1[(E-PYADD3)]{float_1 +^{PY} float_2 \rightarrow float_3}
-	\end{prooftree}\\\\
-
-	% E-PYADD3
-	\begin{prooftree}
-		\hypo{rational_1 + rational_2 = rational_3}
-		\infer[right label=@]1[(E-PYADD3)]{rational_1 +^{PY} rational_2 \rightarrow rational_3}
+		\hypo{float_1 + float_2 = rational_3}
+		\infer[right label=@]1[(E-PYADD3)]{float_1 +^{PY} float_2 \rightarrow rational_3}
 	\end{prooftree}\\\\
 
 	% E-PYADD4
 	\begin{prooftree}
-		\hypo{rational_1 + float_2 = rational_3}
-		\infer[right label=@]1[(E-PYADD4)]{rational_1 +^{PY} float_2 \rightarrow rational_3}
+		\hypo{rational_1 + rational_2 = rational_3}
+		\infer[right label=@]1[(E-PYADD4)]{rational_1 +^{PY} rational_2 \rightarrow rational_3}
 	\end{prooftree}\\\\
 
 	% E-PYADD5
 	\begin{prooftree}
+		\hypo{rational_1 + float_2 = rational_3}
+		\infer[right label=@]1[(E-PYADD5)]{rational_1 +^{PY} float_2 \rightarrow rational_3}
+	\end{prooftree}\\\\
+
+	% E-PYADD6
+	\begin{prooftree}
 		\hypo{float_1 + rational_2 = rational_3}
-		\infer[right label=@]1[(E-PYADD5)]{float_1 +^{PY} rational_2 \rightarrow rational_3}
+		\infer[right label=@]1[(E-PYADD6)]{float_1 +^{PY} rational_2 \rightarrow rational_3}
 	\end{prooftree}\\\\
 	
 	%E-APP1
@@ -396,40 +398,17 @@ bookmarksopen
 	%E-APP2
 	\begin{prooftree}
 		\hypo{\tau_2 \rightarrow \tau_2'}
-		\infer[right label=@]1[(E-APP2)]{v_1 \tau_2 \rightarrow v_1 \tau_2'}
+		\hypo{v_1 \neq fail}
+		\infer[right label=@]2[(E-APP2)]{v_1 \tau_2 \rightarrow v_1 \tau_2'}
 	\end{prooftree}\\\\
 	
 	%E-APPABS
 	\begin{prooftree}
-		\infer[right label=@]0[(E-APPABS)]{
+		\hypo{v_2 \neq fail}
+		\infer[right label=@]1[(E-APPABS)]{
 			(\lambda x:T.\tau_1) v_2 \rightarrow [x := v_2]\tau_1
 		}	
 	\end{prooftree}\\\\
-
-	% E-ADD-FAIL-1
-	\begin{prooftree}
-		\hypo{t_1 \rightarrow fail}
-		\infer[right label=@]1[(E-ADD-FAIL-1)]{t_1 + t_2 \rightarrow fail}
-	\end{prooftree}\\\\
-	
-	% E-ADD-FAIL-2
-	\begin{prooftree}
-		\hypo{t_2 \rightarrow fail}
-		\infer[right label=@]1[(E-ADD-FAIL-2)]{v_1 + t_2 \rightarrow fail}
-	\end{prooftree}\\\\
-
-	%E-APP-FAIL-1
-	\begin{prooftree}
-		\hypo{\tau_1 \rightarrow fail}
-		\infer[right label=@]1[(E-APP-FAIL-1)]{\tau_1 \tau_2 \rightarrow fail}
-	\end{prooftree}\\\\
-
-	%E-APP-FAIL-2
-	\begin{prooftree}
-		\hypo{\tau_2 \rightarrow fail}
-		\infer[right label=@]1[(E-APP-FAIL-2)]{v_1 \tau_2 \rightarrow fail}
-	\end{prooftree}\\\\
-
 
 %*********************************************
 %*********************************************
