@@ -30,7 +30,7 @@ bookmarksopen
 	\pagebreak
 	
 	\section{Introduction}
-	An early-stage specification of a Pyret binding generator for TypeScript code based on augmented simply-typed lambda calculi and source-type indexed logical relations as outlined by \textcite{FFI}.
+	An early sketch for a specification of a Pyret binding generator for TypeScript code based on augmented simply-typed lambda calculi and source-type indexed logical relations as outlined by \textcite{FFI}.
 	
 	\section{Core Subset of TypeScript ($TS_{NUM}$)}
 	
@@ -204,7 +204,7 @@ bookmarksopen
 %*********************************************
 %*********************************************
 %*********************************************	
-	\section{$L_{v1}$}
+	\section{$Target Language L$}
 	A common target language for $TS_{NUM}$ and $PY_{NUM}$ represented as a simply typed lambda calculus augmented with:
 	\begin{enumerate}
 		\item ``Unlimited'' precision rational numbers (as found in $PY_{NUM}$)
@@ -236,6 +236,7 @@ bookmarksopen
 		fail						&& \text{Explicit failure value}
 	\end{align*}
 
+	Note that the `fail' value is NOT a `NaN' found with floating point numbers.
 
 %*********************************************
 %*********************************************
@@ -251,8 +252,6 @@ bookmarksopen
 %*********************************************
 %*********************************************	
 	\subsection{Evaluation}
-	
-	Evaluation rules around the `fail' are omitted (evaluation immediately halts).\\
 	
 	% E-ADD1
 	\begin{prooftree}
@@ -290,29 +289,13 @@ bookmarksopen
 	
 	% E-PYADD3
 	\begin{prooftree}
-		\hypo{float_1 + float_2 = rational_3}
-		\infer[right label=@]1[(E-PYADD3)]{float_1 +^{PY} float_2 \rightarrow rational_3}
-	\end{prooftree}\\\\
-
-	% E-PYADD4
-	\begin{prooftree}
 		\hypo{rational_1 + rational_2 = rational_3}
-		\infer[right label=@]1[(E-PYADD4)]{rational_1 +^{PY} rational_2 \rightarrow rational_3}
-	\end{prooftree}\\\\
-
-	% E-PYADD5
-	\begin{prooftree}
-		\hypo{rational_1 + float_2 = rational_3}
-		\infer[right label=@]1[(E-PYADD5)]{rational_1 +^{PY} float_2 \rightarrow rational_3}
-	\end{prooftree}\\\\
-
-	% E-PYADD6
-	\begin{prooftree}
-		\hypo{float_1 + rational_2 = rational_3}
-		\infer[right label=@]1[(E-PYADD6)]{float_1 +^{PY} rational_2 \rightarrow rational_3}
+		\infer[right label=@]1[(E-PYADD3)]{rational_1 +^{PY} rational_2 \rightarrow rational_3}
 	\end{prooftree}\\\\
 	
-	The evaluation rules have been omitted for brevity. They are the combination of the evaluations rules of $PY_{NUM}$ and $TS_{NUM}$ (merging application and abstraction). Do note that with such a merging, $float_1 +^{PY} t_2$, etc. would be considered `stuck' with the current formulation.
+	The behavior of terms with `fail' values have been omitted for brevity. Assume evaluating any sub-term to `fail' returns a `fail'. Under the current formulation, no term may evaluate to the explicit `fail' value. The value itself will be used to signal an FFI failure.
+	
+	Also note that the implementation of `$+^{PY}$' (and all other rational operators provided by js-numbers.js) can handle adding any combination of rational and floating point numbers. For this sketch of a specification, this behavior will be ignored in the evaluation and typing rules. However, this behavior will be considered/used later on when considering the FFI boundary.
 
 %*********************************************
 %*********************************************
@@ -346,25 +329,11 @@ bookmarksopen
 		\infer[right label=@]2[(T-ADD)]{\Gamma \vdash t_1 + t_2: num_f}
 	\end{prooftree}\\\\
 
-	% T-PY-ADD-1
+	% T-PYADD
 	\begin{prooftree}
 		\hypo{\Gamma \vdash t_1: num_r}
 		\hypo{ \Gamma \vdash t_2: num_r}
-		\infer[right label=@]2[(T-PY-ADD1)]{\Gamma \vdash t_1 +^{PY} t_2: num_r}
-	\end{prooftree}\\\\
-
-	% T-PY-ADD-2
-	\begin{prooftree}
-		\hypo{\Gamma \vdash t_1: num_r}
-		\hypo{\Gamma \vdash t_2: num_f}
-		\infer[right label=@]2[(T-PY-ADD2)]{\Gamma \vdash t_1 +^{PY} t_2: num_r}
-	\end{prooftree}\\\\
-
-	% T-PY-ADD-3
-	\begin{prooftree}
-		\hypo{\Gamma \vdash t_1: num_f}
-		\hypo{\Gamma \vdash t_2: num_r}
-		\infer[right label=@]2[(T-PY-ADD3)]{\Gamma \vdash t_1 +^{PY} t_2: num_r}
+		\infer[right label=@]2[(T-PYADD)]{\Gamma \vdash t_1 +^{PY} t_2: num_r}
 	\end{prooftree}\\\\
 
 	% T-ABS
@@ -377,10 +346,10 @@ bookmarksopen
 	
 	% T-APP
 	\begin{prooftree}
-		\hypo{\Gamma \vdash \tau_1: T_1 \rightarrow T_2}
-		\hypo{\Gamma \vdash \tau_2: T_1}
+		\hypo{\Gamma \vdash t_1: T_1 \rightarrow T_2}
+		\hypo{\Gamma \vdash t_2: T_1}
 		\infer[right label=@]2[(T-APP)]{
-			\Gamma \vdash \tau_1 \tau_2: T_2
+			\Gamma \vdash t_1 t_2: T_2
 		}
 	\end{prooftree}
 
@@ -389,7 +358,7 @@ bookmarksopen
 %*********************************************
 %*********************************************
 %*********************************************	
-	\section{Compiler $TS_{sub}$ to $L{v1}$}
+	\section{Compiler $TS_{NUM}$ to Target $L$}
 
 	\subsection{Types}
 	\begin{align*}
@@ -401,10 +370,10 @@ bookmarksopen
 %*********************************************	
 	\subsection{Terms}
 	\begin{align*}
-	float: Number							 && = && float: num_f\\
-	\tau_1 + \tau_2: Number					 && = && \tau_1' + \tau_2': num_f\\
-	\tau_1 \tau_2: T						 && = && \tau_1' \tau_2': T'\\
-	\lambda x: T_1.\tau: T_1 \rightarrow T_2 && = && \lambda x: T_1'.\tau': T_1' \rightarrow T_2'
+	float: Number							 	&& = && float: num_f\\
+	t_1 + t_2: Number					 		&& = && t_1' + t_2': num_f\\
+	t_1 t_2: T						 			&& = && t_1' t_2': T'\\
+	\lambda x\colon T_1.t: T_1 \rightarrow T_2	&& = && \lambda x: T_1'.t': T_1' \rightarrow T_2'
 	\end{align*}
 	
 	
@@ -413,23 +382,9 @@ bookmarksopen
 %*********************************************
 %*********************************************
 %*********************************************	
-	\section{Compiler $PY_{Number}$ to $L_{v1}$ Target}
+	\section{Compiler $PY_{NUM}$ to Target $L$}
+	Identical to the compiler of $TS_{NUM}$ to $L$ save for translating the ``$Number$" type to ``$num_r$".
 	
-	\subsection{Types}
-	\begin{align*}
-	Number					&& = && num_r\\
-	T_1 \rightarrow T_2 	&& = && T_1' \rightarrow T_2'
-	\end{align*}
-	
-	%*********************************************
-	%*********************************************	
-	\subsection{Terms}
-	\begin{align*}
-	rational: Number						 && = && rational: num_r\\
-	\tau_1 + \tau_2: Number					 && = && \tau_1' +^{PY} \tau_2': num_r\\
-	\tau_1 \tau_2: T						 && = && \tau_1' \tau_2': T'\\
-	\lambda x: T_1.\tau: T_1 \rightarrow T_2 && = && \lambda x: T_1'.\tau': T_1' \rightarrow T_2'
-	\end{align*}
 
 
 %*********************************************
@@ -437,36 +392,31 @@ bookmarksopen
 %*********************************************
 %*********************************************
 %*********************************************
-	\section{$L_{v1}$}
+	\section{The Convertibility Relationship}
 	
-	\subparagraph{$TS_{sub}$}
+	Let $\tau$ be any type from $TS_{NUM}$. Let $\rho$ be any type from $PY_{NUM}$. Let $T$ be any type from either language.\\
+	
+	Let $\mathcal{V}[T]$ be the set of all possible values of type $T$ as represented in the operational semantics of the target language L.
+	
+	Let $\mathcal{E}[T]$ be the set of all possible expressions of type $T$ that do \textbf{not} evaluate to `fail'.
+	
+	\subparagraph{$TS_{NUM}$}
 	\begin{align*}
-		\mathcal{V}[[Number]]				&& = && \{ n| n \text{ is any float}\}\\
-		\mathcal{V}[[\eta_1 \rightarrow \eta_2]]	&& = && \{ 
-				(\lambda x.\tau)| 
-				\forall v \in \bf{V}[[\eta_1]].[x:=v]\tau \in \mathcal{E}[[\eta_2]]
+		\mathcal{V}[Number]							&& = && \{ n \mid n \text{ is any float}\}\\
+		\mathcal{V}[\tau_1 \rightarrow \tau_2]		&& = && \{ 
+				(\lambda x\colon \tau_1.t)  \mid
+				\forall v \in \mathcal{V}[\tau_1].[x \mapsto v]t \in \mathcal{E}[[\tau_2]]
 		\}
 	\end{align*}
 	
 	\subparagraph{$PY_{sub}$}
 	\begin{align*}
-		\mathcal{V}[[Number]]				&& = && \{ n| n \text{ is any rational}\}\\
-		\mathcal{V}[[\theta_1 \rightarrow \theta_2]]	&& = && \{ 
-		(\lambda x.\tau)| 
-		\forall v \in \bf{V}[[\theta_1]].[x:=v]\tau \in \mathcal{E}[[\theta_2]]
+		\mathcal{V}[Number]								&& = && \{ n \mid n \text{ is any rational}\}\\
+		\mathcal{V}[\rho_1 \rightarrow \rho_2]			&& = && \{ 
+		(\lambda x: \rho_1.t) \mid
+		\forall v \in \mathcal{V}[[\rho_1]].[x \mapsto v]t \in \mathcal{E}[[\rho_2]]
 		\}
 	\end{align*}
-	
-	\begin{align*}
-		\mathcal{E}[[T]] && = && \{
-		\tau | (\tau \Downarrow fail) \lor
-		(\tau \Downarrow v \land v \in \mathcal{V}[[T]])
-	\}
-	\end{align*}
-	
-	\section{The Convertibility Relationship}
-	
-	Let $\tau$ be any type from $TS_{NUM}$. Let $\mu$ be any type from $PY_{NUM}$.
 	
 	\printbibliography[heading=bibintoc]
 
