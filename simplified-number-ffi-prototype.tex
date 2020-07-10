@@ -358,9 +358,9 @@ bookmarksopen
 %*********************************************
 %*********************************************
 %*********************************************	
-	\section{Compiler $TS_{NUM}$ to Target $L$}
+	\subsection{Compiler $TS_{NUM}$ to Target $L$}
 
-	\subsection{Types}
+	\subsubsection{Types}
 	\begin{align*}
 		Number					&& = && num_f\\
 		T_1 \rightarrow T_2 	&& = && T_1' \rightarrow T_2'
@@ -368,7 +368,7 @@ bookmarksopen
 	
 %*********************************************
 %*********************************************	
-	\subsection{Terms}
+	\subsubsection{Terms}
 	\begin{align*}
 	float: Number							 	&& = && float: num_f\\
 	t_1 + t_2: Number					 		&& = && t_1' + t_2': num_f\\
@@ -382,9 +382,21 @@ bookmarksopen
 %*********************************************
 %*********************************************
 %*********************************************	
-	\section{Compiler $PY_{NUM}$ to Target $L$}
+	\subsection{Compiler $PY_{NUM}$ to Target $L$}
 	Identical to the compiler of $TS_{NUM}$ to $L$ save for translating the ``$Number$" type to ``$num_r$".
 	
+
+%*********************************************
+%*********************************************
+%*********************************************
+%*********************************************
+%*********************************************
+	\section{Notes on $PY_{NUM}$, $TS_{NUM}$, and $L$}
+	
+	\begin{itemize}
+		\item Programs compiled from $PY_{NUM}$ to $L$ will only use $num_r$ and the abstraction types (likewise for $TS_{NUM}$ with $num_f$).
+		\item It is trivial to prove that well-typed programs in either language remain well-typed in $L$.
+	\end{itemize}
 
 
 %*********************************************
@@ -394,30 +406,54 @@ bookmarksopen
 %*********************************************
 	\section{The Convertibility Relationship}
 	
+	The following is a paraphrasing of the convertibility relationship from Patterson and Ahmed \cite{FFI}.\\
+	
 	Let $\tau$ be any type from $TS_{NUM}$. Let $\rho$ be any type from $PY_{NUM}$. Let $T$ be any type from either language.\\
 	
-	Let $\mathcal{V}[T]$ be the set of all possible values of type $T$ as represented in the operational semantics of the target language L.
+	Let $\mathcal{V}[T]$ be the set of all possible values of type $T$ as represented in the operational semantics of the target language L.\\
 	
-	Let $\mathcal{E}[T]$ be the set of all possible expressions of type $T$ that do \textbf{not} evaluate to `fail'.
+	Let $\mathcal{E}[T]$ be the set of all possible terms such that:
+	\[
+		\forall t \in \mathcal{E}[T]. t \Downarrow v \rightarrow v \in \mathcal{V}[T]
+	\]
+
 	
 	\subparagraph{$TS_{NUM}$}
 	\begin{align*}
 		\mathcal{V}[Number]							&& = && \{ n \mid n \text{ is any float}\}\\
 		\mathcal{V}[\tau_1 \rightarrow \tau_2]		&& = && \{ 
 				(\lambda x\colon \tau_1.t)  \mid
-				\forall v \in \mathcal{V}[\tau_1].[x \mapsto v]t \in \mathcal{E}[[\tau_2]]
+				\forall v \in \mathcal{V}[\tau_1].[x \mapsto v]t \in \mathcal{E}[\tau_2]
 		\}
 	\end{align*}
 	
-	\subparagraph{$PY_{sub}$}
+	\subparagraph{$PY_{NUM}$}
 	\begin{align*}
 		\mathcal{V}[Number]								&& = && \{ n \mid n \text{ is any rational}\}\\
 		\mathcal{V}[\rho_1 \rightarrow \rho_2]			&& = && \{ 
 		(\lambda x: \rho_1.t) \mid
-		\forall v \in \mathcal{V}[[\rho_1]].[x \mapsto v]t \in \mathcal{E}[[\rho_2]]
+		\forall v \in \mathcal{V}[\rho_1].[x \mapsto v]t \in \mathcal{E}[\rho_2]
 		\}
 	\end{align*}
-	
-	\printbibliography[heading=bibintoc]
 
+	
+	The convertibility of types between $PY_{NUM}$ and $TS_{NUM}$ is written as the symmetric relationship $T_1 \sim T_2$.\\
+	
+	Two types $\rho$ and $\tau$ can safely be converted between each other iff:
+	\begin{itemize}
+		\item There exists a translator $C_{\rho \mapsto \tau}$ such that:
+		\[
+			\forall t \in \mathcal{E}[\rho]. C_{\rho \mapsto \tau}(t) \in \mathcal{E}[\tau]
+		\]
+		\item There exists a translator $C_{\tau \mapsto \rho}$ such that:
+		\[
+			\forall t \in \mathcal{E}[\tau]. C_{\tau \mapsto \rho}(t) \in \mathcal{E}[\rho]
+		\]
+	\end{itemize}
+	This is the convertibility soundness lemma. These translators may inject runtime code that performs conversions and these conversions can fail (where it would return the `fail' value).
+
+
+
+		
+	\printbibliography[heading=bibintoc]
 \end{document}
