@@ -30,24 +30,24 @@ bookmarksopen
 	\pagebreak
 	
 	\section{Introduction}
-	An early-stage formal specification of a Pyret binding generator for TypeScript code based on augmented simply-typed lambda calculi and source-type indexed logical relations as outlined by \textcite{FFI}.
+	An early-stage specification of a Pyret binding generator for TypeScript code based on augmented simply-typed lambda calculi and source-type indexed logical relations as outlined by \textcite{FFI}.
 	
-	\section{$TS_{sub}$}
+	\section{Core Subset of TypeScript ($TS_{NUM}$)}
 	
-	Simply typed lambda calculus augmented with:
+	A core subset of TypeScript ($TS_{NUM}$) represented as a simply typed lambda calculus augmented with:
 	\begin{enumerate}
 		\item Double-precision 64-bit binary floats (format IEEE 754)
 		\item Float addition (corresponds directly to JS `+' operator)
 	\end{enumerate}
 	
 	\subsection{Terms}
-	$\tau ::=$
+	$t ::=$
 	
 	\begin{align*}
 		float  										&& \text{TS Number} \\
-		\tau_1 + \tau_2 							&& \text{Addition} \\
-		\lambda x:T.\tau_1							&& \text{Abstraction} \\
-		\tau_1 \tau_2								&& \text{Application}
+		t_1 + t_2 									&& \text{Addition} \\
+		\lambda x\colon T.t_1						&& \text{Abstraction} \\
+		t_1 t_2										&& \text{Application}
 	\end{align*}
 
 
@@ -57,7 +57,7 @@ bookmarksopen
 	v ::=
 	\begin{align*}
 		float										&& \text{Double-precision 64-bit binary format IEEE 754} \\
-		\lambda x:T.\tau							&& \text{Abstraction value}
+		\lambda x\colon T.t							&& \text{Abstraction value}
 	\end{align*}
 	
 	
@@ -76,14 +76,14 @@ bookmarksopen
 	
 	% E-ADD1
 	\begin{prooftree}
-		\hypo{\tau_1 \rightarrow \tau_1'}
-		\infer[right label=@]1[(E-ADD1)]{\tau_1 + \tau_2 \rightarrow \tau_1' + \tau_2}
+		\hypo{t_1 \rightarrow t_1'}
+		\infer[right label=@]1[(E-ADD1)]{t_1 + t_2 \rightarrow t_1' + t_2}
 	\end{prooftree}\\\\
 
 	%E-ADD2
 	\begin{prooftree}
-		\hypo{\tau_2 \rightarrow \tau_2'}
-		\infer[right label=@]1[(E-ADD2)]{v_1 + \tau_2 \rightarrow v_1 + \tau_2'}
+		\hypo{t_2 \rightarrow t_2'}
+		\infer[right label=@]1[(E-ADD2)]{v_1 + t_2 \rightarrow v_1 + t_2'}
 	\end{prooftree}\\\\
 
 	%E-ADD3
@@ -94,20 +94,20 @@ bookmarksopen
 	
 	%E-APP1
 	\begin{prooftree}
-		\hypo{\tau_1 \rightarrow \tau_1'}
-		\infer[right label=@]1[(E-APP1)]{\tau_1 \tau_2 \rightarrow \tau_1' \tau_2}
+		\hypo{t_1 \rightarrow t_1'}
+		\infer[right label=@]1[(E-APP1)]{t_1 t_2 \rightarrow t_1' t_2}
 	\end{prooftree}\\\\
 
 	%E-APP2
 	\begin{prooftree}
-		\hypo{\tau_2 \rightarrow \tau_2'}
-		\infer[right label=@]1[(E-APP2)]{v_1 \tau_2 \rightarrow v_1 \tau_2'}
+		\hypo{t_2 \rightarrow t_2'}
+		\infer[right label=@]1[(E-APP2)]{v_1 t_2 \rightarrow v_1 t_2'}
 	\end{prooftree}\\\\
 
 	%E-APPABS
 	\begin{prooftree}
 		\infer[right label=@]0[(E-APPABS)]{
-			(\lambda x:T.\tau_1) v_2 \rightarrow [x := v_2]\tau_1
+			(\lambda x \colon T.t_1) v_2 \rightarrow [x \mapsto v_2]t_1
 		}	
 	\end{prooftree}
 
@@ -123,9 +123,9 @@ bookmarksopen
 
 	% T-ADD
 	\begin{prooftree}
-		\hypo{\tau_1: Number}
-		\hypo{\tau_2: Number}
-		\infer[right label=@]2[(T-ADD)]{\Gamma \vdash \tau_1 + \tau_2: Number}
+		\hypo{t_1: Number}
+		\hypo{t_2: Number}
+		\infer[right label=@]2[(T-ADD)]{\Gamma \vdash t_1 + t_2: Number}
 	\end{prooftree}\\\\
 
 	% T-VAR
@@ -136,18 +136,18 @@ bookmarksopen
 
 	% T-ABS
 	\begin{prooftree}
-		\hypo{\Gamma, x: T_1 \vdash \tau: T_2}
+		\hypo{\Gamma, x: T_1 \vdash t: T_2}
 		\infer[right label=@]1[(T-ABS)]{
-			\Gamma \vdash \lambda x:T_1. \tau: T_1 \rightarrow T_2
+			\Gamma \vdash \lambda x \colon T_1. t: T_1 \rightarrow T_2
 		}
 	\end{prooftree}\\\\
 
 	% T-APP
 	\begin{prooftree}
-		\hypo{\Gamma \vdash \tau_1: T_1 \rightarrow T_2}
-		\hypo{\Gamma \vdash \tau_2: T_1}
+		\hypo{\Gamma \vdash t_1: T_1 \rightarrow T_2}
+		\hypo{\Gamma \vdash t_2: T_1}
 		\infer[right label=@]2[(T-APP)]{
-			\Gamma \vdash \tau_1 \tau_2: T_2
+			\Gamma \vdash t_1 t_2: T_2
 		}
 	\end{prooftree}
 
@@ -157,21 +157,21 @@ bookmarksopen
 %*********************************************
 %*********************************************
 %*********************************************
-	\section{$PY_{Number}$}
-	Simply typed lambda calculus augmented with:
+	\section{Core Subset of Pyret ($PY_{NUM}$)}
+	A core subset of Pyret ($PY_{NUM}$) represented as a simply typed lambda calculus augmented with:
 	\begin{enumerate}
-		\item ``Unlimited'' precision rational numbers
+		\item ``Unlimited'' precision rational numbers (as defined in js-number.js \cite{JSNUMBER})
 		\item Rational addition (corresponds to the \lstinline{add()} function found in js-number.js \cite{JSNUMBERSSOURCE})
 	\end{enumerate}
 
 	\subsection{Terms}
-	$\tau ::=$
+	$t ::=$
 	
 	\begin{align*}
 	rational  									&& \text{Pyret Number} \\
-	\tau_1 + \tau_2 							&& \text{Addition} \\
-	\lambda x:T.\tau_1							&& \text{Abstraction} \\
-	\tau_1 \tau_2								&& \text{Application}
+	t_1 + t_2 									&& \text{Addition} \\
+	\lambda x \colon T.t_1								&& \text{Abstraction} \\
+	t_1 t_2										&& \text{Application}
 	\end{align*}
 	
 	
@@ -181,7 +181,7 @@ bookmarksopen
 	v ::=
 	\begin{align*}
 		rational							&& \text{``Unlimited'' precision rational} \\
-		\lambda x:T.\tau					&& \text{Abstraction value}
+		\lambda x \colon T.t						&& \text{Abstraction value}
 	\end{align*}
 	
 	
@@ -190,90 +190,13 @@ bookmarksopen
 	\subsection{Types}
 	T ::=
 	\begin{align*}
-		Number												&& \text{Type of floats}\\
+		Number												&& \text{Type of Pyret rationals}\\
 		T \rightarrow T										&& \text{Type of functions}
 	\end{align*}
 		
 	%*********************************************
 	%*********************************************
-	\subsection{Evaluation}
-	
-	% E-ADD1
-	\begin{prooftree}
-		\hypo{\tau_1 \rightarrow \tau_1'}
-		\infer[right label=@]1[(E-ADD1)]{\tau_1 + \tau_2 \rightarrow \tau_1' + \tau_2}
-	\end{prooftree}\\\\
-	
-	%E-ADD2
-	\begin{prooftree}
-		\hypo{\tau_2 \rightarrow \tau_2'}
-		\infer[right label=@]1[(E-ADD2)]{v_1 + \tau_2 \rightarrow v_1 + \tau_2'}
-	\end{prooftree}\\\\
-	
-	%E-ADD3
-	\begin{prooftree}
-		\hypo{rational_1 + rational_2 = rational_3}
-		\infer[right label=@]1[(E-ADD3)]{rational_1 + rational_2 \rightarrow rational_3 }
-	\end{prooftree}\\\\
-	
-	%E-APP1
-	\begin{prooftree}
-		\hypo{\tau_1 \rightarrow \tau_1'}
-		\infer[right label=@]1[(E-APP1)]{\tau_1 \tau_2 \rightarrow \tau_1' \tau_2}
-	\end{prooftree}\\\\
-	
-	%E-APP2
-	\begin{prooftree}
-		\hypo{\tau_2 \rightarrow \tau_2'}
-		\infer[right label=@]1[(E-APP2)]{v_1 \tau_2 \rightarrow v_1 \tau_2'}
-	\end{prooftree}\\\\
-	
-	%E-APPABS
-	\begin{prooftree}
-		\infer[right label=@]0[(E-APPABS)]{
-			(\lambda x:T.\tau_1) v_2 \rightarrow [x := v_2]\tau_1
-		}	
-	\end{prooftree}
-	
-	
-	%*********************************************
-	%*********************************************
-	\subsection{Typing}
-	
-	% T-NUMBER
-	\begin{prooftree}
-		\infer[right label=@]0[(T-NUMBER)]{\Gamma \vdash rational: Number}
-	\end{prooftree}\\\\
-	
-	% T-ADD
-	\begin{prooftree}
-		\hypo{\tau_1: Number}
-		\hypo{\tau_2: Number}
-		\infer[right label=@]2[(T-ADD)]{\Gamma \vdash \tau_1 + \tau_2: Number}
-	\end{prooftree}\\\\
-	
-	% T-VAR
-	\begin{prooftree}
-		\hypo{x: T \in \Gamma}
-		\infer[right label=@]1[(T-VAR)]{\Gamma \vdash x: T}
-	\end{prooftree}\\\\
-	
-	% T-ABS
-	\begin{prooftree}
-		\hypo{\Gamma, x: T_1 \vdash \tau: T_2}
-		\infer[right label=@]1[(T-ABS)]{
-			\Gamma \vdash \lambda x:T_1. \tau: T_1 \rightarrow T_2
-		}
-	\end{prooftree}\\\\
-	
-	% T-APP
-	\begin{prooftree}
-		\hypo{\Gamma \vdash \tau_1: T_1 \rightarrow T_2}
-		\hypo{\Gamma \vdash \tau_2: T_1}
-		\infer[right label=@]2[(T-APP)]{
-			\Gamma \vdash \tau_1 \tau_2: T_2
-		}
-	\end{prooftree}
+	Evaluation and typing rules are nearly identical to $TS_{NUM}$ (save for a difference in the numeric type) and are omitted for brevity.
 
 
 %*********************************************
@@ -282,23 +205,23 @@ bookmarksopen
 %*********************************************
 %*********************************************	
 	\section{$L_{v1}$}
-	Common/target language for $TS_{sub}$ and $PY_{Number}$.
-	Simply typed lambda calculus augmented with:
+	A common target language for $TS_{NUM}$ and $PY_{NUM}$ represented as a simply typed lambda calculus augmented with:
 	\begin{enumerate}
-		\item ``Unlimited'' precision rational numbers
-		\item Rational addition (corresponds to the \lstinline{add()} function found in js-number.js \cite{JSNUMBERSSOURCE})
-		\item Double-precision 64-bit binary floats (format IEEE 754)
-		\item Float addition (corresponds directly to JS `+' operator)
+		\item ``Unlimited'' precision rational numbers (as found in $PY_{NUM}$)
+		\item Rational addition (as found in $PY_{NUM}$)
+		\item Double-precision 64-bit binary floats (as found in $TS_{NUM}$)
+		\item Float addition (as found in $TS_{NUM}$)
 	\end{enumerate}
+
 	\subsection{Terms}
-	$\tau ::=$
+	$t ::=$
 	\begin{align*}
 		float 		  								&& \text{TS Number} \\
 		rational	  								&& \text{Pyret Number} \\
-		\tau_1 + \tau_2 							&& \text{Addition} \\
-		\tau_1 +^{PY} \tau_2 						&& \text{Pyret Addition} \\
-		\tau_1 \tau_2 							    && \text{Application} \\
-		\lambda x: T. \tau						    && \text{Abstraction} \\
+		t_1 + t_2 									&& \text{TS Addition} \\
+		t_1 +^{PY} t_2 								&& \text{Pyret Addition} \\
+		t_1 t_2 							    	&& \text{Application} \\
+		\lambda x\colon T. t					    && \text{Abstraction} \\
 	\end{align*}
 
 
@@ -307,8 +230,8 @@ bookmarksopen
 	\subsection{Values}
 	v ::=
 	\begin{align*}
-		float						&& \text{Double-precision 64-bit binary format IEEE 754} \\
-		rational					&& \text{"Unlimited" precision rational number}\\
+		float						&& \text{TS Number} \\
+		rational					&& \text{Pyret Number}\\
 		\lambda x. \tau		    	&& \text{Abstraction} \\
 		fail						&& \text{Explicit failure value}
 	\end{align*}
@@ -389,26 +312,7 @@ bookmarksopen
 		\infer[right label=@]1[(E-PYADD6)]{float_1 +^{PY} rational_2 \rightarrow rational_3}
 	\end{prooftree}\\\\
 	
-	%E-APP1
-	\begin{prooftree}
-		\hypo{\tau_1 \rightarrow \tau_1'}
-		\infer[right label=@]1[(E-APP1)]{\tau_1 \tau_2 \rightarrow \tau_1' \tau_2}
-	\end{prooftree}\\\\
-	
-	%E-APP2
-	\begin{prooftree}
-		\hypo{\tau_2 \rightarrow \tau_2'}
-		\hypo{v_1 \neq fail}
-		\infer[right label=@]2[(E-APP2)]{v_1 \tau_2 \rightarrow v_1 \tau_2'}
-	\end{prooftree}\\\\
-	
-	%E-APPABS
-	\begin{prooftree}
-		\hypo{v_2 \neq fail}
-		\infer[right label=@]1[(E-APPABS)]{
-			(\lambda x:T.\tau_1) v_2 \rightarrow [x := v_2]\tau_1
-		}	
-	\end{prooftree}\\\\
+	The evaluation rules have been omitted for brevity. They are the combination of the evaluations rules of $PY_{NUM}$ and $TS_{NUM}$ (merging application and abstraction). Do note that with such a merging, $float_1 +^{PY} t_2$, etc. would be considered `stuck' with the current formulation.
 
 %*********************************************
 %*********************************************
@@ -559,6 +463,10 @@ bookmarksopen
 		(\tau \Downarrow v \land v \in \mathcal{V}[[T]])
 	\}
 	\end{align*}
+	
+	\section{The Convertibility Relationship}
+	
+	Let $\tau$ be any type from $TS_{NUM}$. Let $\mu$ be any type from $PY_{NUM}$.
 	
 	\printbibliography[heading=bibintoc]
 
