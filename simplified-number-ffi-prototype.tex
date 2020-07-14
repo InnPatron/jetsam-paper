@@ -11,6 +11,7 @@ bookmarksopen
 \usepackage{xcolor}
 \usepackage{xparse}
 \usepackage[style=ACM-Reference-Format,backend=biber]{biblatex}
+\usepackage{stmaryrd}
 
 \addbibresource{references.bib}
 
@@ -23,6 +24,8 @@ bookmarksopen
 	backgroundcolor={\bfseries \color{gray}},
 }
 
+	\newcommand{\makedenoteset}[3]{\mathcal{#1} \llbracket #2 \rrbracket && = && \{#3\}}
+	\newcommand{\denoteset}[2]{\mathcal{#1} \llbracket #2 \rrbracket}
 
 \begin{document}
 	
@@ -123,8 +126,8 @@ bookmarksopen
 
 	% T-ADD
 	\begin{prooftree}
-		\hypo{t_1: Number}
-		\hypo{t_2: Number}
+		\hypo{\Gamma \vdash t_1: Number}
+		\hypo{\Gamma \vdash t_2: Number}
 		\infer[right label=@]2[(T-ADD)]{\Gamma \vdash t_1 + t_2: Number}
 	\end{prooftree}\\\\
 
@@ -384,58 +387,70 @@ bookmarksopen
 %*********************************************	
 	\subsection{Compiler $PY_{NUM}$ to Target $L$}
 	Identical to the compiler of $TS_{NUM}$ to $L$ save for translating the ``$Number$" type to ``$num_r$".
-	
 
 %*********************************************
 %*********************************************
 %*********************************************
 %*********************************************
 %*********************************************
-	\section{Notes on $PY_{NUM}$, $TS_{NUM}$, and $L$}
-	
-	\begin{itemize}
-		\item Programs compiled from $PY_{NUM}$ to $L$ will only use $num_r$ and the abstraction types (likewise for $TS_{NUM}$ with $num_f$).
-		\item It is trivial to prove that well-typed programs in either language remain well-typed in $L$.
-	\end{itemize}
-
-
-%*********************************************
-%*********************************************
-%*********************************************
-%*********************************************
-%*********************************************
-	\section{The Convertibility Relationship}
-	
-	The following is a paraphrasing of the convertibility relationship from Patterson and Ahmed \cite{FFI}.\\
+	\section{The Source-Type Indexed Logical Relationship}
 	
 	Let $\tau$ be any type from $TS_{NUM}$. Let $\rho$ be any type from $PY_{NUM}$. Let $T$ be any type from either language.\\
 	
-	Let $\mathcal{V}[T]$ be the set of all possible values of type $T$ as represented in the operational semantics of the target language L.\\
+	Let $\denoteset{V}{T}$ be the set of all possible values of type $T$ as represented in the operational semantics of the target language L.\\
 	
-	Let $\mathcal{E}[T]$ be the set of all possible terms such that:
+	Let $\denoteset{E}{T}$ be the set of all possible terms of type $T$ that evaluate to value $v$ within the operational semantics of $L$ or `fail':
 	\[
-		\forall t \in \mathcal{E}[T]. t \Downarrow v \rightarrow v \in \mathcal{V}[T]
+		\forall t \in \denoteset{E}{T}. (t \Downarrow v \rightarrow v \in \denoteset{V}{T}) \lor (t \Downarrow fail)
 	\]
 
 	
 	\subparagraph{$TS_{NUM}$}
 	\begin{align*}
-		\mathcal{V}[Number]							&& = && \{ n \mid n \text{ is any float}\}\\
-		\mathcal{V}[\tau_1 \rightarrow \tau_2]		&& = && \{ 
+		\makedenoteset{V}{Number}{n \mid n \text{ is any float}}\\
+		\makedenoteset{V}{\tau_1 \rightarrow \tau_2}{
 				(\lambda x\colon \tau_1.t)  \mid
-				\forall v \in \mathcal{V}[\tau_1].[x \mapsto v]t \in \mathcal{E}[\tau_2]
-		\}
+				\forall v \in \denoteset{V}{\tau_1}.[x \mapsto v]t \in \denoteset{E}{\tau_2}
+		}
 	\end{align*}
 	
 	\subparagraph{$PY_{NUM}$}
 	\begin{align*}
-		\mathcal{V}[Number]								&& = && \{ n \mid n \text{ is any rational}\}\\
-		\mathcal{V}[\rho_1 \rightarrow \rho_2]			&& = && \{ 
-		(\lambda x: \rho_1.t) \mid
-		\forall v \in \mathcal{V}[\rho_1].[x \mapsto v]t \in \mathcal{E}[\rho_2]
-		\}
+		\makedenoteset{V}{Number}{n \mid n \text{ is any rational}}\\
+		\makedenoteset{V}{\tau_1 \rightarrow \tau_2}{
+			(\lambda x: \rho_1.t) \mid
+			\forall v \in \denoteset{V}{\rho_1}.[x \mapsto v]t \in \denoteset{E}{\rho_2}
+		}
 	\end{align*}
+	
+	\subsection{Soundness}
 
+	Given a well-typed term, show that it is semantically well-typed (i.e. evaluates to a value of the right semantic type or terminates with `fail'). More formally:\\
+	
+	\begin{enumerate}
+		\item Given a well-typed term $t: \tau$ in $TS_{NUM}$, show:\\
+		$\Gamma \vdash t: \tau \implies \forall y \in \denoteset{G}{\Gamma}. y(t) \in \denoteset{E}{\tau}$
+		\item Given a well-typed term $t: \rho$ in $PY_{NUM}$, show:\\
+		$\Gamma \vdash t: \rho \implies \forall y \in \denoteset{G}{\Gamma}. y(t) \in \denoteset{E}{\rho}$
+	\end{enumerate}
+
+
+	where $\denoteset{G}{\Gamma}$ is the set of all typing contexts that assign the same type as $\Gamma$ to $t$.
+
+	\begin{itemize}
+		\item Programs compiled from $PY_{NUM}$ to $L$ will only use $num_r$ and the abstraction types (likewise for $TS_{NUM}$ with $num_f$).
+		\item Relying on the above fact, it is trivial to prove that well-typed programs in either language remain well-typed in $L$.
+		\item Therefore, a term $t: T$ will be in $\denoteset{E}{T}$ after being compiled to $L$.
+	\end{itemize}
+
+	%*********************************************
+	%*********************************************
+	%*********************************************
+	%*********************************************
+	%*********************************************
+	\section{The Convertibility Relationship}
+	
+	Let $\tau$ be any type from $TS_{NUM}$. Let $\rho$ be any type from $PY_{NUM}$. Let $T$ be any type from either language.\\
 	
 	The convertibility of types between $PY_{NUM}$ and $TS_{NUM}$ is written as the symmetric relationship $T_1 \sim T_2$.\\
 	
@@ -443,11 +458,11 @@ bookmarksopen
 	\begin{itemize}
 		\item There exists a translator $C_{\rho \mapsto \tau}$ such that:
 		\[
-			\forall t \in \mathcal{E}[\rho]. C_{\rho \mapsto \tau}(t) \in \mathcal{E}[\tau]
+			\forall t \in \denoteset{E}{\rho}. C_{\rho \mapsto \tau}(t) \in \denoteset{E}{\tau}
 		\]
 		\item There exists a translator $C_{\tau \mapsto \rho}$ such that:
 		\[
-			\forall t \in \mathcal{E}[\tau]. C_{\tau \mapsto \rho}(t) \in \mathcal{E}[\rho]
+			\forall t \in \denoteset{E}{\tau}. C_{\tau \mapsto \rho}(t) \in \denoteset{E}{\rho}
 		\]
 	\end{itemize}
 	This is the convertibility soundness lemma. These translators may inject runtime code that performs conversions and these conversions can fail (where it would return the `fail' value).
