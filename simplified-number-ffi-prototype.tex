@@ -295,7 +295,27 @@ bookmarksopen
 		\hypo{rational_1 + rational_2 = rational_3}
 		\infer[right label=@]1[(E-PYADD3)]{rational_1 +^{PY} rational_2 \rightarrow rational_3}
 	\end{prooftree}\\\\
+
+	%E-APP1
+	\begin{prooftree}
+		\hypo{t_1 \rightarrow t_1'}
+		\infer[right label=@]1[(E-APP1)]{t_1 t_2 \rightarrow t_1' t_2}
+	\end{prooftree}\\\\
 	
+	%E-APP2
+	\begin{prooftree}
+		\hypo{t_2 \rightarrow t_2'}
+		\infer[right label=@]1[(E-APP2)]{v_1 t_2 \rightarrow v_1 t_2'}
+	\end{prooftree}\\\\
+	
+	%E-APPABS
+	\begin{prooftree}
+		\infer[right label=@]0[(E-APPABS)]{
+			(\lambda x \colon T.t_1) v_2 \rightarrow [x \mapsto v_2]t_1
+		}
+	\end{prooftree}
+	
+	\paragraph{}
 	The behavior of terms with `fail' values have been omitted for brevity. Assume evaluating any sub-term to `fail' returns a `fail'. Under the current formulation, no term may evaluate to the explicit `fail' value. The value itself will be used to signal an FFI failure.
 	
 	Also note that the implementation of `$+^{PY}$' (and all other rational operators provided by js-numbers.js) can handle adding any combination of rational and floating point numbers. For this sketch of a specification, this behavior will be ignored in the evaluation and typing rules. However, this behavior will be considered/used later on when considering the FFI boundary.
@@ -417,7 +437,7 @@ bookmarksopen
 	\subparagraph{$PY_{NUM}$}
 	\begin{align*}
 		\makedenoteset{V}{Number}{n \mid n \text{ is any rational}}\\
-		\makedenoteset{V}{\tau_1 \rightarrow \tau_2}{
+		\makedenoteset{V}{\rho_1 \rightarrow \rho_2}{
 			(\lambda x: \rho_1.t) \mid
 			\forall v \in \denoteset{V}{\rho_1}.[x \mapsto v]t \in \denoteset{E}{\rho_2}
 		}
