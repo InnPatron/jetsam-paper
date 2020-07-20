@@ -1,6 +1,6 @@
 \documentclass{article}
 \usepackage{indentfirst}
-\usepackage{ebproof}
+\usepackage{bussproofs}
 \usepackage{amsmath}
 \usepackage[
 hidelinks,
@@ -80,39 +80,44 @@ bookmarksopen
 	
 	% E-ADD1
 	\begin{prooftree}
-		\hypo{t_1 \rightarrow t_1'}
-		\infer[right label=@]1[(E-ADD1)]{t_1 + t_2 \rightarrow t_1' + t_2}
-	\end{prooftree}\\\\
+		\AxiomC{$t_1 \rightarrow t_1'$}
+		\LeftLabel{(E-ADD1)}
+		\UnaryInfC{$t_1 + t_2 \rightarrow t_1' + t_2$}
+	\end{prooftree}
 
 	%E-ADD2
 	\begin{prooftree}
-		\hypo{t_2 \rightarrow t_2'}
-		\infer[right label=@]1[(E-ADD2)]{v_1 + t_2 \rightarrow v_1 + t_2'}
-	\end{prooftree}\\\\
+		\AxiomC{$t_2 \rightarrow t_2'$}
+		\LeftLabel{(E-ADD1)}
+		\UnaryInfC{$v_1 + t_2 \rightarrow v_1 + t_2'$}
+	\end{prooftree}
 
 	%E-ADD3
 	\begin{prooftree}
-		\hypo{float_1 + float_2 = float_3}
-		\infer[right label=@]1[(E-ADD3)]{float_1 + float_2 \rightarrow float_3 }
-	\end{prooftree}\\\\
+		\AxiomC{$float_1 + float_2 = float_3$}
+		\LeftLabel{(E-ADD3)}
+		\UnaryInfC{$float_1 + float_2 \rightarrow float_3 $}
+	\end{prooftree}
 	
 	%E-APP1
 	\begin{prooftree}
-		\hypo{t_1 \rightarrow t_1'}
-		\infer[right label=@]1[(E-APP1)]{t_1 t_2 \rightarrow t_1' t_2}
-	\end{prooftree}\\\\
+		\AxiomC{$t_1 \rightarrow t_1'$}
+		\LeftLabel{(E-APP1)}
+		\UnaryInfC{$t_1 t_2 \rightarrow t_1' t_2$}
+	\end{prooftree}
 
 	%E-APP2
 	\begin{prooftree}
-		\hypo{t_2 \rightarrow t_2'}
-		\infer[right label=@]1[(E-APP2)]{v_1 t_2 \rightarrow v_1 t_2'}
-	\end{prooftree}\\\\
+		\AxiomC{$t_2 \rightarrow t_2'$}
+		\LeftLabel{(E-APP2)}
+		\UnaryInfC{$v_1 t_2 \rightarrow v_1 t_2'$}
+	\end{prooftree}
 
 	%E-APPABS
 	\begin{prooftree}
-		\infer[right label=@]0[(E-APPABS)]{
-			(\lambda x \colon T.t_1) v_2 \rightarrow [x \mapsto v_2]t_1
-		}	
+		\AxiomC{}
+		\LeftLabel{(E-APPABS)}
+		\UnaryInfC{$(\lambda x \colon T.t_1) v_2 \rightarrow [x \mapsto v_2]t_1$}	
 	\end{prooftree}
 
 
@@ -122,36 +127,42 @@ bookmarksopen
 	
 	% T-NUMBER
 	\begin{prooftree}
-		\infer[right label=@]0[(T-NUMBER)]{\Gamma \vdash float: Number}
-	\end{prooftree}\\\\
+		\LeftLabel{(T-NUMBER)}
+		\AxiomC{}
+		\UnaryInfC{$\Gamma \vdash float: Number$}
+	\end{prooftree}
 
 	% T-ADD
 	\begin{prooftree}
-		\hypo{\Gamma \vdash t_1: Number}
-		\hypo{\Gamma \vdash t_2: Number}
-		\infer[right label=@]2[(T-ADD)]{\Gamma \vdash t_1 + t_2: Number}
-	\end{prooftree}\\\\
+		\AxiomC{$\Gamma \vdash t_1: Number$}
+		\AxiomC{$\Gamma \vdash t_2: Number$}
+		\LeftLabel{(T-ADD)}
+		\BinaryInfC{$\Gamma \vdash t_1 + t_2: Number$}
+	\end{prooftree}
 
 	% T-VAR
 	\begin{prooftree}
-		\hypo{x: T \in \Gamma}
-		\infer[right label=@]1[(T-VAR)]{\Gamma \vdash x: T}
-	\end{prooftree}\\\\
+		\AxiomC{$x: T \in \Gamma$}
+		\LeftLabel{(T-VAR)}
+		\UnaryInfC{$\Gamma \vdash x: T$}
+	\end{prooftree}
 
 	% T-ABS
 	\begin{prooftree}
-		\hypo{\Gamma, x: T_1 \vdash t: T_2}
-		\infer[right label=@]1[(T-ABS)]{
-			\Gamma \vdash \lambda x \colon T_1. t: T_1 \rightarrow T_2
+		\AxiomC{$\Gamma, x: T_1 \vdash t: T_2$}
+		\LeftLabel{(T-ABS)}
+		\UnaryInfC{
+			$\Gamma \vdash \lambda x \colon T_1. t: T_1 \rightarrow T_2$
 		}
-	\end{prooftree}\\\\
+	\end{prooftree}
 
 	% T-APP
 	\begin{prooftree}
-		\hypo{\Gamma \vdash t_1: T_1 \rightarrow T_2}
-		\hypo{\Gamma \vdash t_2: T_1}
-		\infer[right label=@]2[(T-APP)]{
-			\Gamma \vdash t_1 t_2: T_2
+		\AxiomC{$\Gamma \vdash t_1: T_1 \rightarrow T_2$}
+		\AxiomC{$\Gamma \vdash t_2: T_1$}
+		\LeftLabel{(T-APP)}
+		\BinaryInfC{
+			$\Gamma \vdash t_1 t_2: T_2$
 		}
 	\end{prooftree}
 
@@ -260,60 +271,70 @@ bookmarksopen
 	
 	% E-ADD1
 	\begin{prooftree}
-		\hypo{t_1 \rightarrow t_1'}
-		\hypo{t_1' \neq fail}
-		\infer[right label=@]2[(E-ADD1)]{t_1 + t_2 \rightarrow t_1' + t_2}
-	\end{prooftree}\\\\
+		\AxiomC{$t_1 \rightarrow t_1'$}
+		\AxiomC{$t_1' \neq fail$}
+		\LeftLabel{(E-ADD1)}
+		\BinaryInfC{$t_1 + t_2 \rightarrow t_1' + t_2$}
+	\end{prooftree}
 	
 	% E-ADD2
 	\begin{prooftree}
-		\hypo{t_2 \rightarrow t_2'}
-		\hypo{t_2' \neq fail}
-		\infer[right label=@]2[(E-ADD2)]{v_1 + t_2 \rightarrow v_1 + t_2'}
-	\end{prooftree}\\\\
+		\AxiomC{$t_2 \rightarrow t_2'$}
+		\AxiomC{$t_2' \neq fail$}
+		\LeftLabel{(E-ADD2)}
+		\BinaryInfC{$v_1 + t_2 \rightarrow v_1 + t_2'$}
+	\end{prooftree}
 
 	% E-ADD3
 	\begin{prooftree}
-		\hypo{float_1 + float_2 = float_3}
-		\infer[right label=@]1[(E-ADD3)]{float_1 + float_2 \rightarrow float_3}
-	\end{prooftree}\\\\
+		\AxiomC{$float_1 + float_2 = float_3$}
+		\LeftLabel{(E-ADD3)}
+		\UnaryInfC{$float_1 + float_2 \rightarrow float_3$}
+	\end{prooftree}
 
 	% E-PYADD1
 	\begin{prooftree}
-		\hypo{t_1 \rightarrow t_1'}
-		\hypo{t_1' \neq fail}
-		\infer[right label=@]2[(E-PYADD1)]{t_1 +^{PY} t_2 \rightarrow t_1' +^{PY} t_2}
-	\end{prooftree}\\\\
+		\AxiomC{$t_1 \rightarrow t_1'$}
+		\AxiomC{$t_1' \neq fail$}
+		\LeftLabel{(E-PYADD1)}
+		\BinaryInfC{$t_1 +^{PY} t_2 \rightarrow t_1' +^{PY} t_2$}
+	\end{prooftree}
 	
 	% E-PYADD2
 	\begin{prooftree}
-		\hypo{t_2 \rightarrow t_2'}
-		\hypo{t_2' \neq fail}
-		\infer[right label=@]2[(E-PYADD2)]{v_1 +^{PY} t_2 \rightarrow v_1 +^{PY} t_2'}
-	\end{prooftree}\\\\
+		\AxiomC{$t_2 \rightarrow t_2'$}
+		\AxiomC{$t_2' \neq fail$}
+		\LeftLabel{(E-PYADD2)}
+		\BinaryInfC{$v_1 +^{PY} t_2 \rightarrow v_1 +^{PY} t_2'$}
+	\end{prooftree}
 	
 	% E-PYADD3
 	\begin{prooftree}
-		\hypo{rational_1 + rational_2 = rational_3}
-		\infer[right label=@]1[(E-PYADD3)]{rational_1 +^{PY} rational_2 \rightarrow rational_3}
-	\end{prooftree}\\\\
+		\AxiomC{$rational_1 + rational_2 = rational_3$}
+		\LeftLabel{(E-PYADD3)}
+		\UnaryInfC{$rational_1 +^{PY} rational_2 \rightarrow rational_3$}
+	\end{prooftree}
 
 	%E-APP1
 	\begin{prooftree}
-		\hypo{t_1 \rightarrow t_1'}
-		\infer[right label=@]1[(E-APP1)]{t_1 t_2 \rightarrow t_1' t_2}
-	\end{prooftree}\\\\
+		\AxiomC{$t_1 \rightarrow t_1'$}
+		\LeftLabel{(E-APP1)}
+		\UnaryInfC{$t_1 t_2 \rightarrow t_1' t_2$}
+	\end{prooftree}
 	
 	%E-APP2
 	\begin{prooftree}
-		\hypo{t_2 \rightarrow t_2'}
-		\infer[right label=@]1[(E-APP2)]{v_1 t_2 \rightarrow v_1 t_2'}
-	\end{prooftree}\\\\
+		\AxiomC{$t_2 \rightarrow t_2'$}
+		\LeftLabel{(E-APP2)}
+		\UnaryInfC{$v_1 t_2 \rightarrow v_1 t_2'$}
+	\end{prooftree}
 	
 	%E-APPABS
 	\begin{prooftree}
-		\infer[right label=@]0[(E-APPABS)]{
-			(\lambda x \colon T.t_1) v_2 \rightarrow [x \mapsto v_2]t_1
+		\LeftLabel{(E-APPABS)}
+		\AxiomC{}
+		\UnaryInfC{
+			$(\lambda x \colon T.t_1) v_2 \rightarrow [x \mapsto v_2]t_1$
 		}
 	\end{prooftree}
 	
@@ -328,53 +349,64 @@ bookmarksopen
 	
 	% T-FAIL
 	\begin{prooftree}
-		\infer[right label=@]0[(T-FAIL)]{\Gamma \vdash fail: T}
-	\end{prooftree}\\\\
+		\LeftLabel{(T-FAIL)}
+		\AxiomC{}
+		\UnaryInfC{$\Gamma \vdash fail: T$}
+	\end{prooftree}
 	
 	% T-FLOAT
 	\begin{prooftree}
-		\infer[right label=@]0[(T-FLOAT)]{\Gamma \vdash float: num_f}
-	\end{prooftree}\\\\
+		\LeftLabel{(T-FLOAT)}
+		\AxiomC{}
+		\UnaryInfC{$\Gamma \vdash float: num_f$}
+	\end{prooftree}
 
 	% T-RATIONAL
 	\begin{prooftree}
-		\infer[right label=@]0[(T-RATIONAL)]{\Gamma \vdash rational: num_r}
-	\end{prooftree}\\\\
+		\LeftLabel{(T-RATIONAL)}
+		\AxiomC{}
+		\UnaryInfC{$\Gamma \vdash rational: num_r$}
+	\end{prooftree}
 	
 	% T-VAR
 	\begin{prooftree}
-		\hypo{x: T \in \Gamma}
-		\infer[right label=@]1[(T-VAR)]{\Gamma \vdash x: T}
-	\end{prooftree}\\\\
+		\AxiomC{$x: T \in \Gamma$}
+		\LeftLabel{(T-VAR)}
+		\UnaryInfC{$\Gamma \vdash x: T$}
+	\end{prooftree}
 
 	% T-ADD
 	\begin{prooftree}
-		\hypo{\Gamma \vdash t_1: num_f}
-		\hypo{\Gamma \vdash t_2: num_f}
-		\infer[right label=@]2[(T-ADD)]{\Gamma \vdash t_1 + t_2: num_f}
-	\end{prooftree}\\\\
+		\AxiomC{$\Gamma \vdash t_1: num_f$}
+		\AxiomC{$\Gamma \vdash t_2: num_f$}
+		\LeftLabel{(T-ADD)}
+		\BinaryInfC{$\Gamma \vdash t_1 + t_2: num_f$}
+	\end{prooftree}
 
 	% T-PYADD
 	\begin{prooftree}
-		\hypo{\Gamma \vdash t_1: num_r}
-		\hypo{ \Gamma \vdash t_2: num_r}
-		\infer[right label=@]2[(T-PYADD)]{\Gamma \vdash t_1 +^{PY} t_2: num_r}
-	\end{prooftree}\\\\
+		\AxiomC{$\Gamma \vdash t_1: num_r$}
+		\AxiomC{$\Gamma \vdash t_2: num_r$}
+		\LeftLabel{(T-PYADD)}
+		\BinaryInfC{$\Gamma \vdash t_1 +^{PY} t_2: num_r$}
+	\end{prooftree}
 
 	% T-ABS
 	\begin{prooftree}
-		\hypo{\Gamma, x: T_1 \vdash \tau: T_2}
-		\infer[right label=@]1[(T-ABS)]{
-			\Gamma \vdash \lambda x:T_1. \tau: T_1 \rightarrow T_2
+		\AxiomC{$\Gamma, x: T_1 \vdash \tau: T_2$}
+		\LeftLabel{(T-ABS)}
+		\UnaryInfC{
+			$\Gamma \vdash \lambda x:T_1. \tau: T_1 \rightarrow T_2$
 		}
-	\end{prooftree}\\\\
+	\end{prooftree}
 	
 	% T-APP
 	\begin{prooftree}
-		\hypo{\Gamma \vdash t_1: T_1 \rightarrow T_2}
-		\hypo{\Gamma \vdash t_2: T_1}
-		\infer[right label=@]2[(T-APP)]{
-			\Gamma \vdash t_1 t_2: T_2
+		\AxiomC{$\Gamma \vdash t_1: T_1 \rightarrow T_2$}
+		\AxiomC{$\Gamma \vdash t_2: T_1$}
+		\LeftLabel{(T-APP)}
+		\BinaryInfC{
+			$\Gamma \vdash t_1 t_2: T_2$
 		}
 	\end{prooftree}
 
