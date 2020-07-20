@@ -26,9 +26,13 @@ bookmarksopen
 
 	\newcommand{\makedenoteset}[3]{\mathcal{#1} \llbracket #2 \rrbracket && = && \{#3\}}
 	\newcommand{\denoteset}[2]{\mathcal{#1} \llbracket #2 \rrbracket}
+	
+\title{Jetsam: A Sound Binding Generator for TypeScript to Pyret}
+\author{Alexander Vo}
+\date{}
 
 \begin{document}
-	
+	\maketitle
 	\tableofcontents
 	\pagebreak
 	
@@ -52,7 +56,9 @@ bookmarksopen
 		\item Define and prove a source-type indexed logical relation that will give a formal relation between types in $TS_{NUM}$ and $PY_{NUM}$ and their representation in $L$
 		\item From the source-type indexed logical relation, define and prove a notion of convertibility between $TS_{NUM}$ and $PY_{NUM}$
 		\item Present different types of binding styles (considering performance, intent, and ease of use) that utilize convertibility to provide a sound FFI to TypeScript code from Pyret
-	\end{enumerate} 
+	\end{enumerate}
+
+	Note that in this paper, the subsets of either language will be \textbf{extremely} constrained.
 	
 	\section{Core Subset of TypeScript ($TS_{NUM}$)}
 	
