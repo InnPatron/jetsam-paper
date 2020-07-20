@@ -33,7 +33,26 @@ bookmarksopen
 	\pagebreak
 	
 	\section{Introduction}
-	An early sketch for a specification for Jetsam: a Pyret binding generator for TypeScript code based on augmented simply-typed lambda calculi and source-type indexed logical relations as outlined by \textcite{FFI}.
+	This paper presents a prototype specification for the binding generator Jetsam: a program that reads TypeScript code and outputs a wrapper that allows the TypeScript code to be consumed by Pyret. 
+	
+	Bindings are a form of foreign function interfaces (FFI) where the goal is to provide access to code written in one language to another. They enable interoperability between languages and can greatly broaden the libraries available to a language. This is especially important for Pyret because the ecosystem built around it is tiny in comparison to TypeScript (which in turn has direct access to the JavaScript ecosystem). 
+	
+	While Pyret already has the facilities to interface with TypeScript and JavaScript code, as of the time of writing, the glue code between Pyret and external libraries must be written manually. This entails writing out type information in a format the Pyret compiler can understand and potentially inserting hand-written conversion routines.
+	
+	Needless to say, this can be a long, erroneous, and tedious process, and it is the problem that Jetsam seeks to solve. However, in order to generate the correct code, Jetsam needs to be aware of the semantics of Pyret and TypeScript/JavaScript. 
+	
+	Taking direct inspiration from \textcite{FFI}, this paper uses source-type indexed logical relations as the logical foundation as to what kind of interactions are safe across an FFI boundary.\\
+	
+	
+	This paper is organized in the following way:
+	\begin{enumerate}
+		\item Define a subset of TypeScript ($TS_{NUM}$) that Jetsam can operate on
+		\item Define a subset of Pyret ($PY_{NUM}$) that Jetsam will assume to be the consumer of the generated bindings
+		\item Define a common target language/runtime ($L$) that $TS_{NUM}$ and $PY_{NUM}$ will compile into
+		\item Define and prove a source-type indexed logical relation that will give a formal relation between types in $TS_{NUM}$ and $PY_{NUM}$ and their representation in $L$
+		\item From the source-type indexed logical relation, define and prove a notion of convertibility between $TS_{NUM}$ and $PY_{NUM}$
+		\item Present different types of binding styles (considering performance, intent, and ease of use) that utilize convertibility to provide a sound FFI to TypeScript code from Pyret
+	\end{enumerate} 
 	
 	\section{Core Subset of TypeScript ($TS_{NUM}$)}
 	
