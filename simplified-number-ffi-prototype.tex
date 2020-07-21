@@ -584,6 +584,14 @@ bookmarksopen
 			\item $v \neq fail$ because per the evaluation conventions for $L$, $x$ could only be bound to a value during application. If the argument evaluated to $fail$, substitution will never occur.
 			\item $[x \mapsto v]t'_2 \Downarrow v' \in \denoteset{V}{T_2} \implies t' \in \denoteset{E}{T_1 \rightarrow T_2}$
 		\end{enumerate}
+	
+		%T-VAR
+		\item Case T-VAR: $t = x = (\lambda x: T_1.t_2)$; $x: T_1 \rightarrow T_2 \in Gamma$
+		\begin{enumerate}
+			\item Let $t' = C_{TS \mapsto L}(t) = x'$
+			\item $x'$ is a value, $x: T_1' \rightarrow T_2' \implies x' = (\lambda x. T'_1. t'_2)$
+			\item By the IH, $t'_2 \in \denoteset{E}{T_2}$ $\implies t \in \denoteset{E}{T_1 \rightarrow T_2}$ by definition
+		\end{enumerate}
 	\end{itemize}
 
 	\subsection{$PY_{NUM}$}
