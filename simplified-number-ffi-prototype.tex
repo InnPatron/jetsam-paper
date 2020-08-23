@@ -479,9 +479,9 @@ bookmarksopen
 	
 	Let $\denoteset{V}{T}$ be the set of all possible values of type $T$ as represented in the operational semantics of the target language L.\\
 	
-	Let $\denoteset{E}{T}$ be the set of all possible terms of type $T$ that evaluate to value $v$ within the operational semantics of $L$ or `fail':
+	Let $\denoteset{E}{T}$ be the set of well-typed source-language terms $t$ with type $T$ that, after compilation to $L$, evaluate to value $v$ of the correct type $T$ as represented in $L$ or $fail$:
 	\[
-		\forall t \in \denoteset{E}{T}. (t \Downarrow v \implies v \in \denoteset{V}{T}) \lor (t \Downarrow fail)
+		\forall t \in \denoteset{E}{T}. ((C_{source \mapsto L}(t) \Downarrow v \implies v \in \denoteset{V}{T}) \lor ((C_{source \mapsto L}(t) \Downarrow fail)
 	\]
 
 	
