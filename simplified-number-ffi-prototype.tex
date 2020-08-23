@@ -234,7 +234,7 @@ bookmarksopen
 %*********************************************
 %*********************************************
 %*********************************************	
-	\section{Target Language $L$}
+	\section{Target Language $L_{NUM}$}
 	A common target language for $TS_{NUM}$ and $PY_{NUM}$ represented as a simply typed lambda calculus augmented with:
 	\begin{enumerate}
 		\item ``Unlimited'' precision rational numbers (as found in $PY_{NUM}$)
@@ -429,7 +429,7 @@ bookmarksopen
 %*********************************************
 %*********************************************
 %*********************************************	
-	\subsection{Compiler $TS_{NUM}$ to Target $L$}
+	\subsection{Compiler $TS_{NUM}$ to Target $L_{NUM}$}
 	Denoted as $C_{TS \mapsto L}$
 	\subsubsection{Types}
 	\begin{align*}
@@ -454,8 +454,8 @@ bookmarksopen
 %*********************************************
 %*********************************************
 %*********************************************	
-	\subsection{Compiler $PY_{NUM}$ to Target $L$}
-		Denoted as $C_{PY \mapsto L}$. Identical to the compiler of $TS_{NUM}$ to $L$ save for translating the ``$Number$" type to ``$num_r$".
+	\subsection{Compiler $PY_{NUM}$ to Target $L_{NUM}$}
+		Denoted as $C_{PY \mapsto L}$. Identical to the compiler of $TS_{NUM}$ to $L_{NUM}$ save for translating the ``$Number$" type to ``$num_r$".
 
 %*********************************************
 %*********************************************
@@ -466,11 +466,11 @@ bookmarksopen
 	
 	Let $\tau$ be any type from $TS_{NUM}$. Let $\rho$ be any type from $PY_{NUM}$. Let $T$ be any type from either language.\\
 	
-	Let $\denoteset{V}{T}$ be the set of all possible values of type $T$ as represented in the operational semantics of the target language L.\\
+	Let $\denoteset{V}{T}$ be the set of all possible values of type $T$ as represented in the operational semantics of the target language $L_{NUM}$.\\
 	
-	Let $\denoteset{E}{T}$ be the set of well-typed source-language terms $t$ with type $T$ that, after compilation to $L$, evaluate to value $v$ of the correct type $T$ as represented in $L$ or $fail$:
+	Let $\denoteset{E}{T}$ be the set of well-typed source-language terms $t$ with type $T$ that, after compilation to $L_{NUM}$, evaluate to value $v$ of the correct type $T$ as represented in $L_{NUM}$ or $fail$:
 	\[
-		\forall t \in \denoteset{E}{T}. ((C_{source \mapsto L}(t) \Downarrow v \implies v \in \denoteset{V}{T}) \lor ((C_{source \mapsto L}(t) \Downarrow fail)
+		\forall t \in \denoteset{E}{T}. ((C_{source \mapsto L_{NUM}}(t) \Downarrow v \implies v \in \denoteset{V}{T}) \lor ((C_{source \mapsto L_{NUM}}(t) \Downarrow fail)
 	\]
 
 	
@@ -494,23 +494,23 @@ bookmarksopen
 	
 	\section{Soundness}
 
-	Given a well-typed term in either source language, show that it is semantically well-typed after compiling to $L$ (i.e. evaluates to a value of the right semantic type or terminates with `fail'). More formally:
+	Given a well-typed term in either source language, show that it is semantically well-typed after compiling to $L_{NUM}$ (i.e. evaluates to a value of the right semantic type or terminates with `fail'). More formally:
 	
 	\begin{enumerate}
 		\item Given any well-typed term $t$ in $TS_{NUM}$, show:\\
-		$\Gamma \vdash t: \tau \implies \forall y \in \denoteset{G}{\Gamma}. y(C_{TS \mapsto L}(t)) \in \denoteset{E}{\tau}$
+		$\Gamma \vdash t: \tau \implies \forall y \in \denoteset{G}{\Gamma}. y(C_{TS \mapsto L_{NUM}}(t)) \in \denoteset{E}{\tau}$
 		\item Given any well-typed term $t$ in $PY_{NUM}$, show:\\
-		$\Gamma \vdash t: \rho \implies \forall y \in \denoteset{G}{\Gamma}. y(C_{PY \mapsto L}(t)) \in \denoteset{E}{\rho}$
+		$\Gamma \vdash t: \rho \implies \forall y \in \denoteset{G}{\Gamma}. y(C_{PY \mapsto L_{NUM}}(t)) \in \denoteset{E}{\rho}$
 	\end{enumerate}
 
 
-	where $\denoteset{G}{\Gamma}$ is the set of all typing contexts $\Gamma'$ such that given $\Gamma \vdash t: T$ in the source language, assigns the type $T' = C_{source \mapsto L}(T)$ to term $t' = C_{source \mapsto L}(t)$.
+	where $\denoteset{G}{\Gamma}$ is the set of all typing contexts $\Gamma'$ such that given $\Gamma \vdash t: T$ in the source language, assigns the type $T' = C_{source \mapsto L_{NUM}}(T)$ to term $t' = C_{source \mapsto L_{NUM}}(t)$.
 	
 	\subsection{$TS_{NUM}$}
 	
 	% TS_NUM Number Soundness
 	\paragraph{(Compatibility $Number$).}
-	$\Gamma \vdash t: Number \implies \forall y \in \denoteset{G}{\Gamma}. y(C_{TS \mapsto L}(t)) \in \denoteset{E}{Number}$
+	$\Gamma \vdash t: Number \implies \forall y \in \denoteset{G}{\Gamma}. y(C_{TS \mapsto L_{NUM}}(t)) \in \denoteset{E}{Number}$
 	
 	Proof by induction on typing derivations:
 	
@@ -518,24 +518,24 @@ bookmarksopen
 		% T-NUMBER
 		\item Case T-NUMBER: $t = float$:
 		\begin{enumerate}
-			\item Let $t' = C_{TS \mapsto L}(t) = float \in \denoteset{V}{Number}$
+			\item Let $t' = C_{TS \mapsto L_{NUM}}(t) = float \in \denoteset{V}{Number}$
 			\item $t' \in \denoteset{V}{Number} \implies t' \in \denoteset{E}{Number}$ by definition
 		\end{enumerate}
 		
 		%T-VAR
 		\item Case T-VAR: $t = x$; $x: Number \in Gamma$
 		\begin{enumerate}
-			\item Let $t' = C_{TS \mapsto L}(t) = x$
+			\item Let $t' = C_{TS \mapsto L_{NUM}}(t) = x$
 			\item $x$ is a value, $x: Number \implies x = float \implies t \in \denoteset{E}{Number}$ by definition
 		\end{enumerate}
 	
 		% T-ADD
 		\item Case T-ADD: $t = t_1 + t_2$; $\Gamma \vdash t_1: Number$; $\Gamma \vdash t_2: Number$
 		\begin{enumerate}
-			\item Let $t'_1 = C_{TS \mapsto L}(t_1)$, $t'_2 = C_{TS \mapsto L}(t_2)$
-			\item Let $t' = C_{TS \mapsto L}(t) = C_{TS \mapsto L}(t_1) + C_{TS \mapsto L}(t_2) = t'_1 + t'_2$
+			\item Let $t'_1 = C_{TS \mapsto L_{NUM}}(t_1)$, $t'_2 = C_{TS \mapsto L_{NUM}}(t_2)$
+			\item Let $t' = C_{TS \mapsto L_{NUM}}(t) = C_{TS \mapsto _{NUM}}(t_1) + C_{TS \mapsto L}(t_2) = t'_1 + t'_2$
 			\item By the IH, $t'_1 \in \denoteset{E}{Number}$ and $t'_2 \in \denoteset{E}{Number}$
-			\item If $(t'_1 \Downarrow fail)$ or $(t'_2 \Downarrow fail)$, then by the convention noted in $L$'s evaluation rules:\\
+			\item If $(t'_1 \Downarrow fail)$ or $(t'_2 \Downarrow fail)$, then by the convention noted in $L_{NUM}$'s evaluation rules:\\
 				$t' \Downarrow fail \implies t' \in \denoteset{E}{Number}$
 			\item If $(t'_1 \Downarrow float_1)$ and $(t'_2 \Downarrow float_2)$:\\
 				$t' \Downarrow float \implies t' \in \denoteset{E}{Number}$
@@ -544,10 +544,10 @@ bookmarksopen
 		%T-APP
 		\item Case T-APP: $t = t_1 t_2$; $\Gamma \vdash t_1: T_1 \rightarrow Number$; $\Gamma \vdash t_2: T_1$
 		\begin{enumerate}
-			\item Let $t'_1 = C_{TS \mapsto L}(t_1)$, $t'_2 = C_{TS \mapsto L}(t_2)$
-			\item Let $t' = C_{TS \mapsto L}(t) = C_{TS \mapsto L}(t_1) C_{TS \mapsto L}(t_2) = t'_1 t'_2$
+			\item Let $t'_1 = C_{TS \mapsto L_{NUM}}(t_1)$, $t'_2 = C_{TS \mapsto L_{NUM}}(t_2)$
+			\item Let $t' = C_{TS \mapsto L_{NUM}}(t) = C_{TS \mapsto L}(t_1) C_{TS \mapsto L}(t_2) = t'_1 t'_2$
 			\item By the IH, $t'_1 \in \denoteset{E}{T_1 \rightarrow Number}$ and $t'_2 \in \denoteset{E}{T_1}$
-			\item If $(t'_1 \Downarrow fail)$ or $(t'_2 \Downarrow fail)$, then by the convention noted in $L$'s evaluation rules:\\
+			\item If $(t'_1 \Downarrow fail)$ or $(t'_2 \Downarrow fail)$, then by the convention noted in $L_{NUM}$'s evaluation rules:\\
 			$t' \Downarrow fail \implies t' \in \denoteset{E}{Number}$
 			\item If $(t'_1 \Downarrow (\lambda x: T_1'.t_3))$ and $(t'_2 \Downarrow v \in \denoteset{V}{T_1}, v \neq fail)$:\\
 			\begin{enumerate}
@@ -560,24 +560,24 @@ bookmarksopen
 
 	% TS_NUM Abstraction Soundness
 	\paragraph{(Compatibility $Abstraction$).}
-	$\Gamma \vdash t: T_1 \rightarrow T_2 \implies \forall y \in \denoteset{G}{\Gamma}. y(C_{TS \mapsto L}(t)) \in \denoteset{E}{T_1 \rightarrow T_2}$
+	$\Gamma \vdash t: T_1 \rightarrow T_2 \implies \forall y \in \denoteset{G}{\Gamma}. y(C_{TS \mapsto L_{NUM}}(t)) \in \denoteset{E}{T_1 \rightarrow T_2}$
 
 	Proof by induction on typing derivations:
 	
 	\begin{itemize}
 		\item Case T-ABS: $t = (\lambda x: T_1.t_2)$; $\Gamma, x: T_1 \vdash t_2: T_2$
 		\begin{enumerate}
-			\item Let $t' = C_{TS \mapsto L}(t) = (\lambda x: T'_1.t'_2)$
+			\item Let $t' = C_{TS \mapsto L_{NUM}}(t) = (\lambda x: T'_1.t'_2)$
 			\item Let $v \in \denoteset{V}{T_1}, v \neq fail$
 			\item By the IH, $t'_2 \in \denoteset{E}{T_2}$
-			\item $v \neq fail$ because per the evaluation conventions for $L$, $x$ could only be bound to a value during application. If the argument evaluated to $fail$, substitution will never occur.
+			\item $v \neq fail$ because per the evaluation conventions for $L_{NUM}$, $x$ could only be bound to a value during application. If the argument evaluated to $fail$, substitution will never occur.
 			\item $[x \mapsto v]t'_2 \Downarrow v' \in \denoteset{V}{T_2} \implies t' \in \denoteset{E}{T_1 \rightarrow T_2}$
 		\end{enumerate}
 	
 		%T-VAR
 		\item Case T-VAR: $t = x = (\lambda x: T_1.t_2)$; $x: T_1 \rightarrow T_2 \in Gamma$
 		\begin{enumerate}
-			\item Let $t' = C_{TS \mapsto L}(t) = x'$
+			\item Let $t' = C_{TS \mapsto L_{NUM}}(t) = x'$
 			\item $x'$ is a value, $x: T_1' \rightarrow T_2' \implies x' = (\lambda x. T'_1. t'_2)$
 			\item By the IH, $t'_2 \in \denoteset{E}{T_2}$ $\implies t \in \denoteset{E}{T_1 \rightarrow T_2}$ by definition
 		\end{enumerate}
