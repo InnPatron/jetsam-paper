@@ -37,29 +37,18 @@ bookmarksopen
 	\pagebreak
 	
 	\section{Introduction}
-	This paper presents a prototype specification for the binding generator \textcite{JETSAM}: a program that reads TypeScript code and outputs a wrapper that allows the TypeScript code to be consumed by Pyret. 
+	This paper presents a specification for the binding generator \textcite{JETSAM}: a program that reads TypeScript code and outputs binding code in Pyret.
 	
-	Bindings are a form of foreign function interfaces (FFI) where the goal is to provide access to code written in one language to another. They enable interoperability between languages and can greatly broaden the libraries available to a language. This is especially important for Pyret because the ecosystem built around it is tiny in comparison to TypeScript (which in turn has direct access to the JavaScript ecosystem). 
+	Bindings are a kind of foreign function interface (FFI) mechanism. It is code inserted between a program written in one language and another that allows code to be utilized between the two languages in a defined matter.
 	
-	While Pyret already has the facilities to interface with TypeScript and JavaScript code, as of the time of writing, the glue code between Pyret and foreign libraries must be written manually. This entails writing out type information in a format the Pyret compiler can understand and potentially inserting hand-written conversion routines.
+	FFIs help broaden the libraries available to a particular language. This is especially important for Pyret because its ecosystem is unfortunately tiny in comparison to TypeScript (which in turn has access to the JavaScript ecosystem). TypeScript's impressive collections of libraries include: three.js (a 3D rendering library), matter.js (a 2D physics engine), and chart.js (charting library).
 	
-	Needless to say, this can be a long, erroneous, and tedious process, and it is the problem that Jetsam seeks to solve. However, in order to generate the correct code and type information, Jetsam needs to be aware of the semantics of Pyret and TypeScript/JavaScript. 
+	Pyret already has the facilities to interface with TypeScript code through manually written bindings. However, this manual labor includes writing type information in a Pyret-compatible format, inserting conversion routines, and setting up runtime scaffolding functions. Needless to say, this can be a tedious and erroneous process. Verifying the correctness of the FFI boundary must be done manually as well, and any API changes in the TypeScript code must be continuously handled and reviewed.
 	
-	Taking direct inspiration from \textcite{FFI}, this paper uses source-type indexed logical relations as the logical foundation as to what kind of interactions are safe across an FFI boundary.\\
+	Jetsam seeks to automate the creation of the FFI boundary as well as the verification of correctness. In order to do this however, Jetsam needs to be aware of the semantics of both Pyret and TypeScript. In the spirit of the Lambda Cube, this paper presents various points along a ``TypeScript Polyhedron" and ``Pyret Polyhedron``, subsets of their respective languages with increasingly complex features. Then, taking direct inspiration from \textcite{FFI}, this paper uses source-type indexed logical relations to formally define how data "appears" at runtime. From there, this paper can define how they can be used by the other language through a convertibility relation.
 	
-	
-	This paper is organized in the following way:
-	\begin{enumerate}
-		\item Define a subset of TypeScript ($TS_{NUM}$) that Jetsam can operate on
-		\item Define a subset of Pyret ($PY_{NUM}$) that Jetsam will assume to be the consumer of the generated bindings
-		\item Define a common target language/runtime ($L$) that $TS_{NUM}$ and $PY_{NUM}$ will compile into
-		\item Define and prove a source-type indexed logical relation that will give a formal relation between types in $TS_{NUM}$ and $PY_{NUM}$ and their representation in $L$
-		\item From the source-type indexed logical relation, define and prove a notion of convertibility between $TS_{NUM}$ and $PY_{NUM}$
-		\item Present different types of binding styles (considering performance, intent, and ease of use) that utilize convertibility to provide a sound FFI to TypeScript code from Pyret
-	\end{enumerate}
+	This paper proves that a small variety of binding styles written in a point along the ``Pyret Polyhedron" is semantically sound when wrapping code of a particular point along the ``TypeScript Polyhedron". In turn, Jetsam will only accept TypeScript programs of those verified subsets and emit only one of the verified bindings styles. As a result, any code that Jetsam generates can be safely used from within Pyret.\\
 
-	Note that in this paper, the subsets of either language will be \textbf{extremely} constrained.
-	
 	\section{Core Subset of TypeScript ($TS_{NUM}$)}
 	
 	A core subset of TypeScript ($TS_{NUM}$) represented as a simply typed lambda calculus augmented with:
