@@ -41,7 +41,7 @@ bookmarksopen
 	
 	Bindings are a kind of foreign function interface (FFI) mechanism. It is code inserted between a program written in one language and another that allows code to be utilized between the two languages in a defined matter.
 	
-	FFIs help broaden the libraries available to a particular language. This is especially important for Pyret because its ecosystem is unfortunately tiny in comparison to TypeScript (which in turn has access to the JavaScript ecosystem). TypeScript's impressive collections of libraries include: three.js (a 3D rendering library), matter.js (a 2D physics engine), and chart.js (charting library).
+	FFIs help broaden the libraries available to a particular language. This is especially important for Pyret because its ecosystem is unfortunately tiny in comparison to TypeScript (which in turn has access to the JavaScript ecosystem). TypeScript's impressive collections of libraries include: \textcite{THREEJS} (a 3D rendering library), \textcite{MATTERJS} (a 2D physics engine), and \textcite{CHARTJS} (charting library).
 	
 	Pyret already has the facilities to interface with TypeScript code through manually written bindings. However, this manual labor includes writing type information in a Pyret-compatible format, inserting conversion routines, and setting up runtime scaffolding functions. Needless to say, this can be a tedious and erroneous process. Verifying the correctness of the FFI boundary must be done manually as well, and any API changes in the TypeScript code must be continuously handled and reviewed.
 	
