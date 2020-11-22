@@ -252,6 +252,8 @@ bookmarksopen
 		t_1 +^{PY} t_2 								&& \text{Pyret Addition} \\
 		t_1 t_2 							    	&& \text{Application} \\
 		\lambda x\colon T. t					    && \text{Abstraction} \\
+		\text{FLAT } t_1							&& \text{Rational Evaluation (lossy)}\\
+		\text{RAT} t_1								&& \text{Rational Creation}
 	\end{align*}
 
 
@@ -352,6 +354,38 @@ bookmarksopen
 		}
 	\end{prooftree}
 	
+	% E-FLAT1
+	\begin{prooftree}
+		\AxiomC{$t_1 \rightarrow t_1'$}
+		\AxiomC{$t_1' \neq fail$}
+		\LeftLabel{(E-FLAT1)}
+		\BinaryInfC{$\text{FLAT } t_1 \rightarrow \text{FLAT } t_1'$}
+	\end{prooftree}
+
+	% E-FLAT2
+	\begin{prooftree}
+		\AxiomC{$rational$ as float $= f$}
+		\LeftLabel{(E-FLAT2)}
+		\UnaryInfC{$\text{FLAT } rational \rightarrow f $}
+	\end{prooftree}
+
+	% E-RAT1
+	\begin{prooftree}
+		\AxiomC{$t_1 \rightarrow t_1'$}
+		\AxiomC{$t_1' \neq fail$}
+		\LeftLabel{(E-RAT1)}
+		\BinaryInfC{$\text{RAT } t_1 \rightarrow \text{RAT } t_1'$}
+	\end{prooftree}
+	
+	% E-RAT2
+	\begin{prooftree}
+		\AxiomC{$float$ as rational $= r$}
+		\LeftLabel{(E-RAT2)}
+		\UnaryInfC{$\text{RAT } float \rightarrow r $}
+	\end{prooftree}
+
+
+	
 	\paragraph{}
 	The behavior of terms with `fail' values have been omitted for brevity. Assume evaluating any sub-term to `fail' returns a `fail'. Under the current formulation, no term may evaluate to the explicit `fail' value. The value itself will be used to signal an FFI failure.
 	
@@ -421,6 +455,24 @@ bookmarksopen
 		\LeftLabel{(T-APP)}
 		\BinaryInfC{
 			$\Gamma \vdash t_1 t_2: T_2$
+		}
+	\end{prooftree}
+	
+	% T-FLAT
+	\begin{prooftree}
+		\AxiomC{$\Gamma \vdash t_1: num_r$}
+		\LeftLabel{(T-FLAT)}
+		\UnaryInfC{
+			$\Gamma \vdash \text{FLAT } t_1: num_f$
+		}
+	\end{prooftree}
+
+	% T-RAT
+	\begin{prooftree}
+		\AxiomC{$\Gamma \vdash t_1: num_f$}
+		\LeftLabel{(T-RAT)}
+		\UnaryInfC{
+			$\Gamma \vdash \text{RAT } t_1: num_r$
 		}
 	\end{prooftree}
 
@@ -610,15 +662,58 @@ bookmarksopen
 		\]
 	\end{itemize}
 	This is the convertibility soundness lemma. These translators may inject runtime code that performs conversions and these conversions can fail (where it would return the `fail' value).
+	
+	For $TS_{NUM}$ and $PY_{NUM}$, we define the following convertibility relationships:\\
+	
+	\begin{prooftree}
+		\AxiomC{}
+		\UnaryInfC{
+			$(C_{Number_{PY_{NUM}} \mapsto Number_{TS_{NUM}}}, C_{Number_{TS_{NUM}} \mapsto Number_{PY_{NUM}}}): Number_{PY_{NUM}} \sim Number_{TS_{NUM}}$
+		}
+	\end{prooftree}
+	
+	where
+	\begin{center}
+		\item $C_{Number_{PY_{NUM}} \mapsto Number_{TS_{NUM}}}(e) = \text{FLAT }e$
+		\item $C_{Number_{TS_{NUM}} \mapsto Number_{PY_{NUM}}}(e) = \text{RAT }e$
+	\end{center}
 
+	Proof of convertibility soundness is trivial.\\
+	
+	\begin{prooftree}
+		\AxiomC{$\rho_1 \sim \tau_1$}
+		\AxiomC{$\rho_2 \sim \tau_2$}
+		\BinaryInfC{$(C_{(\rho_1 + \rho_2) \mapsto (\tau_1 + \tau_2)}, ...): PY_{NUM}(\rho_1 + \rho_2) \sim TS_{NUM}(\tau_1 + \tau_2)$}
+	\end{prooftree}
 
-%*********************************************
-%*********************************************
-%*********************************************
-%*********************************************
-%*********************************************
-\section{Using the Convertibility Relationship Pt. 1}
+	where
+	\begin{center}
+		\item $C_{(\rho_1 + \rho_2) \mapsto (\tau_1 + \tau_2)}(e_1 + e_2) = C_{\rho_1 \mapsto \tau_1}(e_1) + C_{\rho_2 \mapsto tau_2}(e_2)$
+		\item $C_{(\tau_1 + \tau_2) \mapsto (\rho_1 + \rho_2)}(e_1 + e_2) = C_{\tau_1 \mapsto \rho_1}(e_1) +^{PY} C_{\tau_2 \mapsto \rho_2}(e_2)$
+	\end{center}
 
+	etc...
+
+	%*********************************************
+	%*********************************************
+	%*********************************************
+	%*********************************************
+	%*********************************************
+	\section{Using the Convertibility Relationship}
+	A complete Pyret program is the tuple $(P, FFI, C)$ where:
+	\begin{enumerate}
+		\item $P$ is the Pyret program
+		\item $FFI$ is the set of all pairs $(name, t: \tau)$ where:
+			\begin{enumerate}
+				\item $t$ is a term in $TS_{NUM}$ which $P$ wishes to use
+				\item $name$ is a binding for $t$ which $P$ will reference to use $t$
+			\end{enumerate}
+		\item $C$ is the set of all compilers defined above (note: this allows different compilers such as $C_{NUMBER_{TS_{NUM}} \mapsto C_{NUMBER_{PY_{NUM}}}}$ which can turn into the identity b/c all floats are binary compatible with rationals)
+	\end{enumerate}
+
+	To type check $P$ with terms referencing name $n$ in $FFI$ bound to $t: \tau$ {\bf expected type $\rho$}, search $C$ for the compiler $C_{\tau \mapsto \rho}$. If it does not exist, it is a compilation error. If it does exist, wrap program $P$ in an abstraction with parameter $n: \rho$ to make $P'$. Do this for all elements in $FFI$.
+	
+	To execute $P'$, compile $P'$ to $L_{NUM}$ and add the argument $C_{\tau \mapsto \rho}(t)$ for each $FFI$ element.\\
 		
 	\printbibliography[heading=bibintoc]
 \end{document}
